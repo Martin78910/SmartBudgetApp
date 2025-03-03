@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Моите бюджети</title>
+        <!-- Bootstrap CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<h1>Настройки на бюджетите</h1>
+<table>
+    <tr>
+        <th>Категория</th>
+        <th>Месечен Лимит</th>
+    </tr>
+    <tr th:each="b : ${budgets}">
+        <td th:text="${b.category}"></td>
+        <td th:text="${b.monthlyLimit}"></td>
+    </tr>
+</table>
+
+<!-- Форма за добавяне/редакция -->
+<form th:action="@{/budgets/create}" th:object="${budgetDTO}" method="post">
+    <div>
+        <label>Категория:</label>
+        <input th:field="*{category}"/>
+    </div>
+    <div>
+        <label>Месечен лимит:</label>
+        <input th:field="*{monthlyLimit}" type="number"/>
+    </div>
+    <button type="submit">Запази</button>
+</form>
+</body>
+</html>

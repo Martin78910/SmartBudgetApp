@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Моите сметки</title>
+
+        <!-- Bootstrap CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<h1>Моите сметки</h1>
+<table>
+    <tr>
+        <th>Име</th>
+        <th>Тип</th>
+        <th>Баланс</th>
+    </tr>
+    <tr th:each="acc : ${accounts}">
+        <td th:text="${acc.accountName}"></td>
+        <td th:text="${acc.accountType}"></td>
+        <td th:text="${acc.balance}"></td>
+    </tr>
+</table>
+
+<!-- Форма за добавяне на нова сметка -->
+<form th:action="@{/accounts/create}" th:object="${accountDTO}" method="post">
+    <div>
+        <label>Име на сметка:</label>
+        <input th:field="*{accountName}" />
+    </div>
+    <div>
+        <label>Тип:</label>
+        <input th:field="*{accountType}" />
+    </div>
+    <div>
+        <label>Начален баланс:</label>
+        <input th:field="*{balance}" type="number" />
+    </div>
+    <button type="submit">Добави</button>
+</form>
+
+</body>
+</html>
