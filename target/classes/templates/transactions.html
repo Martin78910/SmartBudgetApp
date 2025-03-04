@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Транзакции</title>
+
+        <!-- Bootstrap CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<h1>Транзакции</h1>
+<select th:field="${selectedAccountId}">
+    <option th:each="acc : ${accounts}" th:value="${acc.id}" th:text="${acc.accountName}"></option>
+</select>
+<button th:onclick="|window.location.href='/transactions/list?accountId=' + document.querySelector('select').value|">
+    Прегледай
+</button>
+
+<!-- Списък транзакции, зареден с ajax или направо при GET request -->
+<table>
+    <tr>
+        <th>Дата</th>
+        <th>Описание</th>
+        <th>Категория</th>
+        <th>Сума</th>
+        <th>Приход/Разход</th>
+    </tr>
+    <tr th:each="trx : ${transactions}">
+        <td th:text="${trx.transactionDate}"></td>
+        <td th:text="${trx.description}"></td>
+        <td th:text="${trx.category}"></td>
+        <td th:text="${trx.amount}"></td>
+        <td th:text="${trx.income} ? 'Приход' : 'Разход' "></td>
+    </tr>
+</table>
+
+<!-- Добавяне на нова транзакция -->
+<form th:action="@{/transactions/add}" th:object="${transactionDTO}" method="post">
+    <input th:field="*{accountId}" type="hidden" th:value="${selectedAccountId}"/>
+    <div>
+        <label>Сума:</label>
+        <input th:field="*{amount}" type="number"/>
+    </div>
+    <div>
+        <label>Описание:</label>
+        <input th:field="*{description}" type="text"/>
+    </div>
+    <div>
+        <label>Категория:</label>
+        <input th:field="*{category}" type="text"/>
+    </div>
+    <div>
+        <label>Приход?</label>
+        <input th:field="*{income}" type="checkbox"/>
+    </div>
+    <button type="submit">Добави</button>
+</form>
+
+<!-- Експорт в CSV/PDF -->
+<a th:href="@{/transactions/export/csv(accountId=${selectedAccountId})}">Експорт в CSV</a>
+<a th:href="@{/transactions/export/pdf(accountId=${selectedAccountId})}">Експорт в PDF</a>
+
+</body>
+</html>

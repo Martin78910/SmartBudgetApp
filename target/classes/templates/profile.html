@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Моят профил</title>
+        <!-- Bootstrap CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<h1>Профил на потребителя</h1>
+<p>Email: <span th:text="${user.email}">user@example.com</span></p>
+<p>Full Name: <span th:text="${user.fullName}"></span></p>
+<p>Валута: <span th:text="${user.currency}">BGN</span></p>
+<img th:if="${user.profilePictureUrl != null}" 
+     th:src="${user.profilePictureUrl}" alt="Profile Pic"/>
+
+<!-- Форма за редакция на профила -->
+<form th:action="@{/users/profile/update}" method="post">
+    <!-- примерни полета -->
+    <input type="text" name="fullName" placeholder="Пълно име" />
+    <input type="text" name="currency" placeholder="Валута (BGN, USD, EUR...)" />
+    <button type="submit">Запази</button>
+</form>
+
+<!-- 2FA проверка -->
+<div>
+    <h3>2FA (Google Authenticator)</h3>
+    <img th:src="@{/2fa/qr}" alt="2FA QR Code" />
+    <!-- 2FA код: -->
+    <form th:action="@{/2fa/verify}" method="post">
+        <input type="text" name="code" placeholder="123456"/>
+        <button type="submit">Verify 2FA</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Отчет за бюджета</title>
+    <script th:src="@{/js/chart.min.js}"></script>
+        <!-- Bootstrap CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<h1>Месечен отчет</h1>
+<canvas id="myChart"></canvas>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+    let chartData = /*[[${reportData}]]*/ '[]'; // например [{category: 'Храна', amount: 200}, ...]
+    // Тук инициализираме chart.js
+    const ctx = document.getElementById('myChart');
+    // ...
+/*]]>*/
+</script>
+</body>
+</html>

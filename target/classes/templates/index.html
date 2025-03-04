@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SmartBudget - Home</title>
+
+        <!-- Bootstrap CSS -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<h1>Добре дошли в SmartBudget!</h1>
+<p>Управлявайте финансите си лесно и бързо.</p>
+
+<div>
+    <a th:href="@{/about}">За нас</a> | 
+    <a th:href="@{/contact}">Контакти</a> | 
+    <a th:href="@{/login}">Вход</a> |
+    <a th:href="@{/users/register}">Регистрация</a>
+</div>
+
+</body>
+</html>
