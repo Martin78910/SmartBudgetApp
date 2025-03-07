@@ -51,10 +51,12 @@
     <div>
         <label>Email:</label>
         <input type="text" name="email"/>
+        <p class="text-warning" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" >Error Text Here</p>
     </div>
     <div>
         <label>Password:</label>
         <input type="password" name="password"/>
+        <p class="text-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error Text Here</p>
     </div>
     <button type="submit">Вход</button>
 </form>
@@ -62,6 +64,12 @@
 <!-- Линкове за социален вход (Google, Facebook) -->
 <a th:href="@{/oauth2/authorization/google}">Влез с Google</a>
 <a th:href="@{/oauth2/authorization/facebook}">Влез с Facebook</a>
+
+<footer class="bg-dark text-white text-center mt-5 p-3">
+    SmartBudget &copy; 2025. Всички права запазени.
+</footer>
+
+<script th:src="@{/js/bootstrap.min.js}"></script>
 
 </body>
 </html>

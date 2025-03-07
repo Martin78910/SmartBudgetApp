@@ -40,34 +40,37 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        // Добавяме /users/login в permitAll, за да може всеки да достъпи логин страницата
-                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        // ВАЖНО: казваме, че логин страницата е /users/login
-                        .loginPage("/users/login")
+    http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+            .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
 
-                        // В HTML формата имаме name="username" и name="password"
-                        .usernameParameter("email")
-                        .passwordParameter("password")
+            // само логнати потребители имат достъп до профил, сметки, бюджети, транзакции
+            .requestMatchers("/users/profile").authenticated()
+            .requestMatchers("/users/accounts").authenticated()
+            .requestMatchers("/users/budgets").authenticated()
+            .requestMatchers("/users/transactions").authenticated()
 
-                        // След успешен логин да ни праща на /
-                        .defaultSuccessUrl("/", true)
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .permitAll()
-                )
-                .csrf(Customizer.withDefaults());
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/users/login")
+           
+            .usernameParameter("email")
+            .passwordParameter("password")
+            // след успешен логин -> "/users/home"
+            .defaultSuccessUrl("/users/home", true)
+            .permitAll()
+        )
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/")
+            .permitAll()
+        )
+        .csrf().disable();
 
-        return http.build();
-    }
+    return http.build();
+}
+
 
 }
