@@ -21,9 +21,6 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    /**
-     * Създаваме PasswordEncoder, който ще използваме в UserService и при логин.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -41,23 +38,25 @@ public class SecurityConfig {
                 .build();
     }
 
-    /**
-     * Основна Security конфигурация (FilterChain).
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Примерна конфигурация
         http
                 .authorizeHttpRequests(auth -> auth
+                        // Добавяме /users/login в permitAll, за да може всеки да достъпи логин страницата
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/", "/about", "/contact", "/users/register", "/login", "/error").permitAll()
+                        .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")     // custom login page
-                        .usernameParameter("username") // ако в login form името на полето е username=..., иначе email=...
+                        // ВАЖНО: казваме, че логин страницата е /users/login
+                        .loginPage("/users/login")
+
+                        // В HTML формата имаме name="username" и name="password"
+                        .usernameParameter("email")
                         .passwordParameter("password")
+
+                        // След успешен логин да ни праща на /
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
@@ -66,7 +65,6 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                         .permitAll()
                 )
-                // по желание: .oauth2Login(...) // за социални логини
                 .csrf(Customizer.withDefaults());
 
         return http.build();

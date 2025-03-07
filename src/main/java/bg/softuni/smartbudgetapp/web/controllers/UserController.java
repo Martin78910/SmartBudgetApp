@@ -1,6 +1,7 @@
 package bg.softuni.smartbudgetapp.web.controllers;
 
 import bg.softuni.smartbudgetapp.models.UserEntity;
+import bg.softuni.smartbudgetapp.models.dto.UserLoginDTO;
 import bg.softuni.smartbudgetapp.models.dto.UserRegisterDTO;
 import bg.softuni.smartbudgetapp.services.UserService;
 import jakarta.validation.Valid;
@@ -55,8 +56,46 @@ public class UserController {
         userService.registerUser(userEntity, "ROLE_USER");
 
         // Пренасочваме към /login (или където желаете)
-        return "redirect:/login";
+        return "redirect:/users/login";
     }
+
+    @GetMapping("/login")
+    public String LoginForm(Model model) {
+        // Ако в model-а няма userLoginDTO, създаваме нов
+        if (!model.containsAttribute("userLoginDTO")) {
+            model.addAttribute("userLoginDTO", new UserLoginDTO());
+        }
+        return "login";
+    }
+
+
+    @PostMapping("/login")
+    public String loginUser(
+            @Valid @ModelAttribute("userLoginDTO") UserLoginDTO userLoginDTO,
+            BindingResult bindingResult,
+            Model model) {
+
+        // 1) Валидация на полетата (Email, Password)
+        if (bindingResult.hasErrors()) {
+            // ако има грешки, връщаме login формата и показваме съобщения
+            return "login";
+        }
+
+        // 2) Извикваме логиката за логин (примерен метод в сървиса)
+        var userEntity = userService.loginUser(userLoginDTO);
+        if (userEntity == null) {
+            // ако userService върне null (неуспешен логин), добавяме съобщение и се връщаме
+            model.addAttribute("badCredentials", true);
+            return "login";
+        }
+
+        // 3) Успешен логин – може да запишете потребителя в сесия, SecurityContext, да пренасочите и т.н.
+        // Тук, ако ползвате Spring Security "out-of-the-box", обикновено не правите manual логин,
+        // а разчитате на formLogin(). Но ако е custom логика, покажете профила:
+        return "redirect:/users/profile";
+    }
+
+
 
     @GetMapping("/profile")
     public String userProfile(Model model) {

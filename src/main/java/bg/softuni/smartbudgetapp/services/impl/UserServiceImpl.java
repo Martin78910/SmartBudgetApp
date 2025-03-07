@@ -2,6 +2,7 @@ package bg.softuni.smartbudgetapp.services.impl;
 
 import bg.softuni.smartbudgetapp.models.RoleEntity;
 import bg.softuni.smartbudgetapp.models.UserEntity;
+import bg.softuni.smartbudgetapp.models.dto.UserLoginDTO;
 import bg.softuni.smartbudgetapp.repositories.RoleRepository;
 import bg.softuni.smartbudgetapp.repositories.UserRepository;
 import bg.softuni.smartbudgetapp.services.UserService;
@@ -41,6 +42,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
+    public UserEntity loginUser(UserLoginDTO userLoginDTO) {
+        // 1. Намираме UserEntity по email
+        UserEntity user = this.findByEmail(userLoginDTO.getEmail());
+        if (user == null) {
+            return null; // няма такъв потребител
+        }
+
+        // 2. Проверяваме паролата
+        boolean matches = passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword());
+        if (!matches) {
+            return null; // паролата е грешна
+        }
+
+        // 3. Успех - връщаме user
+        return user;
     }
 
     @Override
