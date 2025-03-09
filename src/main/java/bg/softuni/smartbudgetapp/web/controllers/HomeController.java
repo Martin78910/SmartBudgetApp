@@ -1,6 +1,9 @@
 package bg.softuni.smartbudgetapp.web.controllers;
 
 
+import bg.softuni.smartbudgetapp.models.dto.AccountDTO;
+import bg.softuni.smartbudgetapp.models.dto.BudgetDTO;
+import bg.softuni.smartbudgetapp.models.dto.TransactionDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +18,46 @@ public class HomeController {
     }
 
 
-    @GetMapping("users/home")
+    @GetMapping("/users/home")
     public String showHome() {
         return "home";
     }
+
+
+    @GetMapping("/users/accounts")
+    public String showAccounts(Model model) {
+
+        if (!model.containsAttribute("accountDTO")) {
+            model.addAttribute("accountDTO", new AccountDTO());
+        }
+
+        return "accounts";
+    }
+
+
+
+    @GetMapping("/users/budgets")
+    public String showBudgets(Model model) {
+
+        if (!model.containsAttribute("budgetDTO")) {
+            model.addAttribute("budgetDTO", new BudgetDTO());
+        }
+
+        return "budgets";
+    }
+
+
+
+    @GetMapping("/users/transactions")
+    public String showTransactions(Model model) {
+
+        if (!model.containsAttribute("transactionDTO")) {
+            model.addAttribute("transactionDTO", new TransactionDTO());
+        }
+
+        return "transactions";
+    }
+
 
 
 }
