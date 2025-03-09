@@ -15,11 +15,10 @@ public class HomeController {
     }
 
 
- @GetMapping("users/home")
+    @GetMapping("users/home")
     public String showHome() {
-        return "home"; 
+        return "home";
     }
-
 
 
 }

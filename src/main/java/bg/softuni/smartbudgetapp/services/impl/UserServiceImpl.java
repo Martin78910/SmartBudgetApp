@@ -75,10 +75,10 @@ public class UserServiceImpl implements UserService {
 
         // 3. Проверка за промяна на паролата
         //    Ако потребителят е подал нова парола (и тя не е празна), кодираме и я задаваме.
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-            String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
-            existingUser.setPassword(encodedPassword);
-        }
+//        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+//            String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
+//            existingUser.setPassword(encodedPassword);
+//        }
 
         // 4. Запазваме в базата
         userRepository.save(existingUser);

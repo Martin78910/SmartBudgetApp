@@ -27,7 +27,9 @@ public class UserEntity {
     private Set<RoleEntity> roles;
 
     private String fullName;
-    private String currency;
+    @Enumerated(EnumType.STRING)
+    private CurrencyEnum currency;
+
     private String profilePictureUrl;
 
     public UserEntity() {
@@ -75,11 +77,11 @@ public class UserEntity {
         this.fullName = fullName;
     }
 
-    public String getCurrency() {
+    public CurrencyEnum getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(CurrencyEnum currency) {
         this.currency = currency;
     }
 

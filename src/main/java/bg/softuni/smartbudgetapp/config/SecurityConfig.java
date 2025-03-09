@@ -26,9 +26,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Създаваме AuthenticationManager, конфигуриран с нашия userDetailsService и passwordEncoder.
-     */
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -40,37 +37,39 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-            .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
 
-            // само логнати потребители имат достъп до профил, сметки, бюджети, транзакции
-            .requestMatchers("/users/profile").authenticated()
-            .requestMatchers("/users/accounts").authenticated()
-            .requestMatchers("/users/budgets").authenticated()
-            .requestMatchers("/users/transactions").authenticated()
+                        // Само за логнати потребители:
+                        .requestMatchers("/users/profile").authenticated()
+                        .requestMatchers("/users/accounts").authenticated()
+                        .requestMatchers("/users/budgets").authenticated()
+                        .requestMatchers("/users/transactions").authenticated()
 
-            .anyRequest().authenticated()
-        )
-        .formLogin(form -> form
-            .loginPage("/users/login")
-           
-            .usernameParameter("email")
-            .passwordParameter("password")
-            // след успешен логин -> "/users/home"
-            .defaultSuccessUrl("/users/home", true)
-            .permitAll()
-        )
-        .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/")
-            .permitAll()
-        )
-        .csrf().disable();
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        // ВАЖНО: казваме, че логин страница е /users/login
+                        .loginPage("/users/login")
 
-    return http.build();
-}
+                        // Ако във form полето е name="email":
+                        .usernameParameter("email")
+                        .passwordParameter("password")
 
+                        // Къде да праща след успех
+                        .defaultSuccessUrl("/users/home", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .permitAll()
+                )
+                .csrf(Customizer.withDefaults());
+
+        return http.build();
+    }
 
 }
