@@ -44,6 +44,7 @@ public class SecurityConfig {
 
                         // Само за логнати потребители:
                         .requestMatchers("/users/profile").authenticated()
+                        .requestMatchers("/users/profile/update").authenticated()
                         .requestMatchers("/users/accounts").authenticated()
                         .requestMatchers("/users/budgets").authenticated()
                         .requestMatchers("/users/transactions").authenticated()

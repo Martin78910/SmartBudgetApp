@@ -67,38 +67,9 @@
 <p>Име: <span th:text="${user.fullName}"></span></p>
 <p>Валута: <span th:text="${user.currency}">BGN</span></p>
 
-
-<!-- Форма за редакция на профила -->
-<form th:action="@{/users/profile/update}"
-      th:object="${userProfileDTO}"
-      method="post">
-
-    <div>
-        <label>Име:</label>
-        <input th:field="*{fullName}" type="text" />
-        <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></p>
-    </div>
-
-    <div>
-        <label>Валута:</label>
-        <select th:field="*{currency}">
-            <option value="" disabled selected>Избери валута</option>
-            <option th:each="c : ${allCurrencies}"
-                    th:value="${c.code}"
-                    th:text="${c.code}">
-            </option>
-        </select>
-        <p th:if="${#fields.hasErrors('currency')}" th:errors="*{currency}"></p>
-    </div>
-
-    <!-- По избор, ако желаете и снимката да се променя -->
-    <div>
-        <label>Линк към профилва снимка:</label>
-        <input th:field="*{profilePictureUrl}" type="text" />
-    </div>
-
-    <button type="submit">Запази</button>
-</form>
+<div>
+<a th:href="@{/users/profile/update}" class="btn btn-warning">Редакция на профила</a>
+</div>
 
 <!-- 2FA проверка -->
 <div>

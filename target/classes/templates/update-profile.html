@@ -58,29 +58,40 @@
 
 
 
-<h1>Профил на потребителя</h1>
-<img th:src="${(user.profilePictureUrl == null or #strings.isEmpty(user.profilePictureUrl))
-                 ? 'https://cdn0.iconfinder.com/data/icons/cryptocurrency-137/128/1_profile_user_avatar_account_person-132-256.png'
-                 : user.profilePictureUrl}"
-     alt="Profile Pic"/>
-<p>Email: <span th:text="${user.email}">user@example.com</span></p>
-<p>Име: <span th:text="${user.fullName}"></span></p>
-<p>Валута: <span th:text="${user.currency}">BGN</span></p>
+<h1>Редакция на потребителските данни</h1>
 
-<div>
-<a th:href="@{/users/profile/update}" class="btn btn-warning">Редакция на профила</a>
-</div>
+<!-- Форма за редакция на профила -->
+<form th:action="@{/users/profile/update}"
+      th:object="${userProfileDTO}"
+      method="post">
 
-<!-- 2FA проверка -->
-<div>
-    <h3>2FA (Google Authenticator)</h3>
-    <img th:src="@{/2fa/qr}" alt="2FA QR Code" />
-    <!-- 2FA код: -->
-    <form th:action="@{/2fa/verify}" method="post">
-        <input type="text" name="code" placeholder="123456"/>
-        <button type="submit">Verify 2FA</button>
-    </form>
-</div>
+    <div>
+        <label>Име:</label>
+        <input th:field="*{fullName}" type="text" />
+        <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></p>
+    </div>
+
+    <div>
+        <label>Валута:</label>
+        <select th:field="*{currency}">
+            <option value="" disabled selected>Избери валута</option>
+            <option th:each="c : ${allCurrencies}"
+                    th:value="${c.code}"
+                    th:text="${c.code}">
+            </option>
+        </select>
+        <p th:if="${#fields.hasErrors('currency')}" th:errors="*{currency}"></p>
+    </div>
+
+    <!-- По избор, ако желаете и снимката да се променя -->
+    <div>
+        <label>Линк към профилва снимка:</label>
+        <input th:field="*{profilePictureUrl}" type="text" />
+    </div>
+
+    <button type="submit">Запази</button>
+</form>
+
 
 <!-- Footer -->
 <footer class="bg-dark text-white text-center mt-5 p-3">

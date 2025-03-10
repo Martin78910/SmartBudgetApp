@@ -108,6 +108,34 @@ public class UserController {
         return "profile";
     }
 
+
+    @GetMapping("/profile/update")
+    public String showUpdateProfileForm(Model model, Principal principal) {
+
+        // 1) Намираме логнатия потребител по email
+        String currentUserEmail = principal.getName();
+        UserEntity user = userService.findByEmail(currentUserEmail);
+        if (user == null) {
+            throw new RuntimeException("Logged user not found in DB!");
+        }
+
+        // 2) Подготвяме DTO
+        UserProfileDTO userProfileDTO = new UserProfileDTO();
+        userProfileDTO.setFullName(user.getFullName());
+        userProfileDTO.setCurrency(user.getCurrency());
+        userProfileDTO.setProfilePictureUrl(user.getProfilePictureUrl());
+
+        model.addAttribute("userProfileDTO", userProfileDTO);
+
+        // зареждаме валутите
+        model.addAttribute("allCurrencies", currencyService.getAllCurrencies());
+
+        // 3) Връщаме update-profile.html
+        return "update-profile";
+    }
+
+
+
     @PostMapping("/profile/update")
     public String updateProfile(
             @Valid @ModelAttribute("userProfileDTO") UserProfileDTO userProfileDTO,
@@ -117,7 +145,7 @@ public class UserController {
 
         // 1. Ако има валидационни грешки, връщаме същата страница
         if (bindingResult.hasErrors()) {
-            return "profiles"; // или името на profile шаблон
+            return "update-profile"; // или името на profile шаблон
         }
 
         // 2. Откриваме текущо логнатия потребител (по email)
