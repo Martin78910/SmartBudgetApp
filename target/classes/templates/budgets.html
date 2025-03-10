@@ -74,7 +74,13 @@
 <form th:action="@{/budgets/create}" th:object="${budgetDTO}" method="post">
     <div>
         <label>Категория:</label>
-        <input th:field="*{category}"/>
+        <select th:field="*{category}">
+            <option value="" disabled selected>Избери категория</option>
+            <option th:each="cat : ${allCategories}"
+                    th:value="${cat.code}"
+                    th:text="${cat.code}">
+            </option>
+        </select>
     </div>
     <div>
         <label>Месечен лимит:</label>

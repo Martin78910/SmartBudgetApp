@@ -1,21 +1,22 @@
 package bg.softuni.smartbudgetapp.models.dto;
 
+import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class BudgetDTO {
 
     private Long id;
 
-    @NotBlank
-    private String category;
+    @NotNull(message = "Category is required")
+    private CategoryEnum category;
 
     @Min(value = 0, message = "Monthly limit cannot be negative")
     private Double monthlyLimit;
 
     public BudgetDTO() {
     }
-
 
     public Long getId() {
         return id;
@@ -25,11 +26,11 @@ public class BudgetDTO {
         this.id = id;
     }
 
-    public @NotBlank String getCategory() {
+    public @NotNull(message = "Category is required") CategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(@NotBlank String category) {
+    public void setCategory(@NotNull(message = "Category is required") CategoryEnum category) {
         this.category = category;
     }
 

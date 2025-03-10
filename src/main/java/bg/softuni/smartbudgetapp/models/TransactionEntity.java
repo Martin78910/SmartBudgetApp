@@ -13,7 +13,10 @@ public class TransactionEntity {
 
     private Double amount;
     private String description;
-    private String category;
+
+    @Enumerated(EnumType.STRING)
+    private CategoryEnum category;
+
     private LocalDateTime transactionDate;
 
     // inbound/outbound
@@ -51,11 +54,11 @@ public class TransactionEntity {
         this.description = description;
     }
 
-    public String getCategory() {
+    public CategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(CategoryEnum category) {
         this.category = category;
     }
 

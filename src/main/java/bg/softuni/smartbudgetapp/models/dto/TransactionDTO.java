@@ -1,5 +1,6 @@
 package bg.softuni.smartbudgetapp.models.dto;
 
+import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,19 +18,15 @@ public class TransactionDTO {
     @Size(max = 200, message = "Description too long")
     private String description;
 
-    @NotNull
-    private String category;
+    @NotNull(message = "Category is required")
+    private CategoryEnum category; // enum instead of String
 
-    private boolean income; // inbound/outbound
-
+    private boolean income;
     private LocalDateTime transactionDate;
-
     private Long accountId;
-
 
     public TransactionDTO() {
     }
-
 
     public Long getId() {
         return id;
@@ -55,11 +52,11 @@ public class TransactionDTO {
         this.description = description;
     }
 
-    public @NotNull String getCategory() {
+    public @NotNull(message = "Category is required") CategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(@NotNull String category) {
+    public void setCategory(@NotNull(message = "Category is required") CategoryEnum category) {
         this.category = category;
     }
 

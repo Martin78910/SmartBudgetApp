@@ -12,7 +12,9 @@ public class BudgetEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private CategoryEnum category;
+
     private Double monthlyLimit;
 
     @ManyToOne
@@ -30,11 +32,11 @@ public class BudgetEntity {
         this.id = id;
     }
 
-    public String getCategory() {
+    public CategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(CategoryEnum category) {
         this.category = category;
     }
 
