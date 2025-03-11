@@ -45,17 +45,7 @@ public class HomeController {
 
 
 
-    @GetMapping("/users/budgets")
-    public String showBudgets(Model model) {
 
-        if (!model.containsAttribute("budgetDTO")) {
-            model.addAttribute("budgetDTO", new BudgetDTO());
-        }
-
-        model.addAttribute("allCategories", categoryService.getAllCategories());
-
-        return "budgets";
-    }
 
 
 

@@ -71,7 +71,7 @@
 </table>
 
 <!-- Форма за добавяне/редакция -->
-<form th:action="@{/budgets/create}" th:object="${budgetDTO}" method="post">
+<form th:action="@{/users/budgets/create}" th:object="${budgetDTO}" method="post">
     <div>
         <label>Категория:</label>
         <select th:field="*{category}">
