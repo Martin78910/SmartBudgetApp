@@ -33,19 +33,6 @@ public class HomeController {
     }
 
 
-    @GetMapping("/users/accounts")
-    public String showAccounts(Model model) {
-
-        if (!model.containsAttribute("accountDTO")) {
-            model.addAttribute("accountDTO", new AccountDTO());
-        }
-
-        return "accounts";
-    }
-
-
-
-
 
 
 

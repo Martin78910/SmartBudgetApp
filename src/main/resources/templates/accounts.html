@@ -73,7 +73,7 @@
 </table>
 
 <!-- Форма за добавяне на нова сметка -->
-<form th:action="@{/accounts/create}" th:object="${accountDTO}" method="post">
+<form th:action="@{/users/accounts/create}" th:object="${accountDTO}" method="post">
     <div>
         <label>Име на сметка:</label>
         <input th:field="*{accountName}" />
