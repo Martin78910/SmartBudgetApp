@@ -42,6 +42,9 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
 
+                        // Достъпно само за ADMIN ролята => hasRole("ADMIN") == "ROLE_ADMIN"
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         // Само за логнати потребители:
                         .requestMatchers("/users/profile").authenticated()
                         .requestMatchers("/users/profile/update").authenticated()

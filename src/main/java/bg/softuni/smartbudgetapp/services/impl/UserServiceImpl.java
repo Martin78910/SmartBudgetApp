@@ -28,6 +28,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity registerUser(UserEntity user, String role) {
+        // Ако не е подадена конкретна роля, ползваме "ROLE_USER" по подразбиране
+        if (role == null || role.isBlank()) {
+            role = "ROLE_USER";
+        }
+
+        // Намираме ролята от базата
         RoleEntity roleEntity = roleRepository.findByName(role)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         user.getRoles().add(roleEntity);
@@ -46,41 +52,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity loginUser(UserLoginDTO userLoginDTO) {
-        // 1. Намираме UserEntity по email
         UserEntity user = this.findByEmail(userLoginDTO.getEmail());
         if (user == null) {
             return null; // няма такъв потребител
         }
-
-        // 2. Проверяваме паролата
         boolean matches = passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword());
         if (!matches) {
-            return null; // паролата е грешна
+            return null; // паролата не съвпада
         }
-
-        // 3. Успех - връщаме user
         return user;
     }
 
     @Override
     public void updateUserProfile(UserEntity updatedUser) {
-        // 1. Вземаме текущия запис от базата
+        // 1. Намираме user от базата
         UserEntity existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 2. Ъпдейтваме полетата (например име, профилна снимка, валута)
+        // 2. Обновяваме полета (име, снимка, валута и т.н.)
         existingUser.setFullName(updatedUser.getFullName());
         existingUser.setCurrency(updatedUser.getCurrency());
         existingUser.setProfilePictureUrl(updatedUser.getProfilePictureUrl());
 
-        // 3. Проверка за промяна на паролата
-        //    Ако потребителят е подал нова парола (и тя не е празна), кодираме и я задаваме.
-//        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-//            String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
-//            existingUser.setPassword(encodedPassword);
-//        }
+        // Ако искате да позволите смяна на парола през updateProfile,
+        // може да проверите дали updatedUser.getPassword() != null && !isBlank()
 
-        // 4. Запазваме в базата
         userRepository.save(existingUser);
     }
 
@@ -97,6 +93,7 @@ public class UserServiceImpl implements UserService {
         RoleEntity roleEntity = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
+        // Изчистваме старите роли и добавяме само новата
         user.getRoles().clear();
         user.getRoles().add(roleEntity);
 
