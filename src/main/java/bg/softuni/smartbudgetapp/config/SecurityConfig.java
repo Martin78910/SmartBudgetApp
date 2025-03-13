@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
+                        // Разрешаваме достъп до access-denied
+                        .requestMatchers("/access-denied").permitAll()
 
                         // Достъпно само за ADMIN ролята => hasRole("ADMIN") == "ROLE_ADMIN"
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -71,6 +73,9 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                         .permitAll()
                 )
+                // Използваме accessDeniedPage, за да покажем персонализиран access-denied шаблон
+                .exceptionHandling(exception -> exception.accessDeniedPage("/access-denied"))
+
                 .csrf(Customizer.withDefaults());
 
         return http.build();
