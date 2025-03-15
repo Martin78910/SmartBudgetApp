@@ -36,19 +36,4 @@ public class HomeController {
 
 
 
-    @GetMapping("/users/transactions")
-    public String showTransactions(Model model) {
-
-        if (!model.containsAttribute("transactionDTO")) {
-            model.addAttribute("transactionDTO", new TransactionDTO());
-        }
-
-        model.addAttribute("allCategories", categoryService.getAllCategories());
-
-
-        return "transactions";
-    }
-
-
-
 }

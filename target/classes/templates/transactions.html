@@ -65,7 +65,7 @@
 <!--    Прегледай-->
 <!--</button>-->
 
-<!-- Списък транзакции, зареден с ajax или направо при GET request -->
+<!-- Списък транзакции -->
 <table>
     <tr>
         <th>Дата</th>
@@ -84,16 +84,32 @@
 </table>
 
 <!-- Добавяне на нова транзакция -->
-<form th:action="@{/transactions/add}" th:object="${transactionDTO}" method="post">
-    <input th:field="*{accountId}" type="hidden" th:value="${selectedAccountId}"/>
+<form th:action="@{/users/transactions/add}"
+      th:object="${transactionDTO}"
+      method="post">
+
+    <!-- СМЕТКА (dropdown) -->
+    <div>
+        <label>Сметка:</label>
+        <select th:field="*{accountId}">
+            <option value="" disabled selected>-- Избери сметка --</option>
+            <option th:each="acc : ${accounts}"
+                    th:value="${acc.id}"
+                    th:text="${acc.accountName}">
+            </option>
+        </select>
+    </div>
+
     <div>
         <label>Сума:</label>
         <input th:field="*{amount}" type="number"/>
     </div>
+
     <div>
         <label>Описание:</label>
         <input th:field="*{description}" type="text"/>
     </div>
+
     <div>
         <label>Категория:</label>
         <select th:field="*{category}">
@@ -104,10 +120,12 @@
             </option>
         </select>
     </div>
+
     <div>
         <label>Приход?</label>
         <input th:field="*{income}" type="checkbox"/>
     </div>
+
     <button type="submit">Добави</button>
 </form>
 
