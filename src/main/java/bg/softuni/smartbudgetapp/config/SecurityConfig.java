@@ -44,6 +44,9 @@ public class SecurityConfig {
                         // Разрешаваме достъп до access-denied
                         .requestMatchers("/access-denied").permitAll()
 
+                        // Това позволява GET/POST /api/advice без логин
+                        .requestMatchers("/api/advice", "/api/advice/**").permitAll()
+
                         // Достъпно само за ADMIN ролята => hasRole("ADMIN") == "ROLE_ADMIN"
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
@@ -76,7 +79,8 @@ public class SecurityConfig {
                 // Използваме accessDeniedPage, за да покажем персонализиран access-denied шаблон
                 .exceptionHandling(exception -> exception.accessDeniedPage("/access-denied"))
 
-                .csrf(Customizer.withDefaults());
+                .csrf(csrf -> csrf.disable());
+        //.csrf(Customizer.withDefaults());
 
         return http.build();
     }
