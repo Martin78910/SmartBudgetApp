@@ -2,6 +2,7 @@ package bg.softuni.smartbudgetapp.services.impl;
 
 
 import bg.softuni.smartbudgetapp.models.BudgetEntity;
+import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import bg.softuni.smartbudgetapp.models.UserEntity;
 import bg.softuni.smartbudgetapp.models.dto.BudgetDTO;
 import bg.softuni.smartbudgetapp.repositories.BudgetRepository;
@@ -60,6 +61,19 @@ public class BudgetServiceImpl implements BudgetService {
         dto.setMonthlyLimit(entity.getMonthlyLimit());
         // userId / userEmail не са предвидени в DTO, но може да добавите при нужда
         return dto;
+    }
+
+    @Override
+    public double getMonthlyLimit(Long userId, CategoryEnum category) {
+        // 1. Намираме бюджетния запис за даден user и category
+
+        return budgetRepository.findAll().stream()
+                .filter(b -> b.getUser() != null
+                        && b.getUser().getId().equals(userId)
+                        && b.getCategory() == category)
+                .findFirst()
+                .map(BudgetEntity::getMonthlyLimit)
+                .orElse(0.0); // ако няма запис – 0 или някаква дефолтна стойност
     }
 
 

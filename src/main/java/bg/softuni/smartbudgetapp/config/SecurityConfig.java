@@ -79,9 +79,11 @@ public class SecurityConfig {
                 // Използваме accessDeniedPage, за да покажем персонализиран access-denied шаблон
                 .exceptionHandling(exception -> exception.accessDeniedPage("/access-denied"))
 
-                .csrf(csrf -> csrf.disable());
-        //.csrf(Customizer.withDefaults());
+               //.csrf(csrf -> csrf.disable());
+             //.csrf(Customizer.withDefaults());
 
+        // The key: ignoring CSRF for API calls
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
         return http.build();
     }
 

@@ -1,6 +1,7 @@
 package bg.softuni.smartbudgetapp.services.impl;
 
 import bg.softuni.smartbudgetapp.models.AccountEntity;
+import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import bg.softuni.smartbudgetapp.models.TransactionEntity;
 import bg.softuni.smartbudgetapp.models.dto.TransactionDTO;
 import bg.softuni.smartbudgetapp.repositories.AccountRepository;
@@ -67,6 +68,27 @@ public class TransactionServiceImpl implements TransactionService {
             dto.setAccountId(entity.getAccount().getId());
         }
         return dto;
+    }
+
+
+    @Override
+    public double getSpentForCategory(Long userId, CategoryEnum category) {
+        // взимаме всички транзакции, които са за потребителя (чрез неговите сметки)
+        // и имат тази категория, и са outbound (income=false).
+        // Имаме AccountEntity(owner=UserEntity). => Нужен ни е userId там.
+
+        // Първо намираме всички транзакции,
+
+        List<TransactionEntity> all = transactionRepository.findAll();
+        return all.stream()
+                .filter(t -> t.getAccount() != null
+                        && t.getAccount().getOwner() != null
+                        && t.getAccount().getOwner().getId().equals(userId)
+                        && t.getCategory() == category
+                        && !t.isIncome() // само разходи
+                )
+                .mapToDouble(TransactionEntity::getAmount)
+                .sum();
     }
 
 }

@@ -3,7 +3,7 @@
 <head>
     <title>Транзакции</title>
 
-        <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
     <!-- Custom CSS -->
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
@@ -12,10 +12,8 @@
 </head>
 <body>
 
-<!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <!-- Брандинг (лого/име) -->
         <a class="navbar-brand" th:href="@{/}">SmartBudget</a>
         <button class="navbar-toggler" type="button"
                 data-bs-toggle="collapse"
@@ -28,29 +26,23 @@
 
         <div class="collapse navbar-collapse" id="navbarMain">
             <ul class="navbar-nav ms-auto">
-                <!-- Профил -->
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/users/profile}">Профил</a>
                 </li>
-                <!-- Сметки -->
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/users/accounts}">Сметки</a>
                 </li>
-                <!-- Бюджети -->
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/users/budgets}">Бюджети</a>
                 </li>
-                <!-- Трансакции -->
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/users/transactions}">Трансакции</a>
                 </li>
-                <!-- Изход -->
                 <li class="nav-item">
                     <form id="logout-form" th:action="@{/logout}" method="post" style="display: none;">
                         <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
                     </form>
-                    <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">
-                        Изход</a>
+                    <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">Изход</a>
                 </li>
             </ul>
         </div>
@@ -58,14 +50,13 @@
 </nav>
 
 <h1>Транзакции</h1>
-<!--<select th:field="${selectedAccountId}">-->
-<!--    <option th:each="acc : ${accounts}" th:value="${acc.id}" th:text="${acc.accountName}"></option>-->
-<!--</select>-->
-<!--<button th:onclick="|window.location.href='/transactions/list?accountId=' + document.querySelector('select').value|">-->
-<!--    Прегледай-->
-<!--</button>-->
 
-<!-- Списък транзакции -->
+<!-- Показваме съвета, ако има -->
+<div th:if="${adviceMessage != null}">
+    <div class="alert alert-warning" th:text="${adviceMessage}"></div>
+</div>
+
+<!-- Тук показваме списък транзакции -->
 <table>
     <tr>
         <th>Дата</th>
@@ -75,20 +66,19 @@
         <th>Приход/Разход</th>
     </tr>
     <tr th:each="trx : ${transactions}">
-        <td th:text="${trx.transactionDate}"></td>
-        <td th:text="${trx.description}"></td>
-        <td th:text="${trx.category}"></td>
-        <td th:text="${trx.amount}"></td>
-        <td th:text="${trx.income} ? 'Приход' : 'Разход' "></td>
+        <td th:text="${trx.transactionDate}">Дата</td>
+        <td th:text="${trx.description}">Описание</td>
+        <td th:text="${trx.category}">Категория</td>
+        <td th:text="${trx.amount}">Сума</td>
+        <td th:text="${trx.income} ? 'Приход' : 'Разход'">Тип</td>
     </tr>
 </table>
 
-<!-- Добавяне на нова транзакция -->
+<!-- Форма за добавяне на нова транзакция -->
 <form th:action="@{/users/transactions/add}"
       th:object="${transactionDTO}"
       method="post">
 
-    <!-- СМЕТКА (dropdown) -->
     <div>
         <label>Сметка:</label>
         <select th:field="*{accountId}">
@@ -113,7 +103,7 @@
     <div>
         <label>Категория:</label>
         <select th:field="*{category}">
-            <option value="" disabled selected>Избери категория</option>
+            <option value="" disabled selected>-- Избери категория --</option>
             <option th:each="cat : ${allCategories}"
                     th:value="${cat.code}"
                     th:text="${cat.code}">
@@ -129,12 +119,6 @@
     <button type="submit">Добави</button>
 </form>
 
-<!-- Експорт в CSV/PDF -->
-<a th:href="@{/transactions/export/csv(accountId=${selectedAccountId})}">Експорт в CSV</a>
-<a th:href="@{/transactions/export/pdf(accountId=${selectedAccountId})}">Експорт в PDF</a>
-
-
-<!-- Footer -->
 <footer class="bg-dark text-white text-center mt-5 p-3">
     SmartBudget &copy; 2025. Всички права запазени.
 </footer>
