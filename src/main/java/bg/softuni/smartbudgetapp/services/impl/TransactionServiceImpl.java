@@ -71,6 +71,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
 
+    /**
+     * метод, който използва custom метод на TransactionRepository.
+     * Ако няма намерени транзакции, SUM(...) ще върне null, затова го обработваме.
+     */
+    @Override
+    public double getTotalSpendingForCategory(Long userId, CategoryEnum category) {
+        Double sum = transactionRepository.getTotalSpendingForCategory(userId, category);
+        return (sum != null) ? sum : 0.0;
+    }
+
+
+
     @Override
     public double getSpentForCategory(Long userId, CategoryEnum category) {
         // взимаме всички транзакции, които са за потребителя (чрез неговите сметки)
@@ -90,5 +102,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .mapToDouble(TransactionEntity::getAmount)
                 .sum();
     }
+
+
 
 }

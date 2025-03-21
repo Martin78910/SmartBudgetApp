@@ -22,6 +22,9 @@ public interface UserService {
     // Смяна на роля (user <-> admin)
     void changeUserRole(Long userId, String roleName);
 
+    // Метод, който ще връща всички потребители
+    List<UserEntity> findAllUsers();
+
     // Логика за логин
     UserEntity loginUser(UserLoginDTO userLoginDTO);
 }

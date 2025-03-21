@@ -10,6 +10,7 @@ public interface TransactionService {
     List<TransactionDTO> getTransactionsByAccountId(Long accountId);
     TransactionDTO addTransaction(TransactionDTO transactionDTO);
     double getSpentForCategory(Long userId, CategoryEnum category);
-
+    // връща общите разходи (outbound) за даден userId и категория
+    double getTotalSpendingForCategory(Long userId, CategoryEnum category);
 
 }
