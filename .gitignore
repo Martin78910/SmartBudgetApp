@@ -1,0 +1,18 @@
+# IntelliJ IDEA
+/.idea/
+*.iml
+*.ipr
+*.iws
+
+# Build artifacts
+/target/
+*.class
+*.jar
+
+# Secrets
+/src/main/resources/secrets.properties
+/src/main/java/bg/softuni/smartbudgetapp/config/TestSecrets.java
+
+# System files
+.DS_Store
+*.log
