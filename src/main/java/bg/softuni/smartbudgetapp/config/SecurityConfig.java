@@ -40,7 +40,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/", "/about", "/contact", "/users/register", "/users/login", "/error").permitAll()
+                        .requestMatchers("/", "/about", "/contact", "/contact/send", "/users/register", "/users/login", "/error").permitAll()
                         // Разрешаваме достъп до access-denied
                         .requestMatchers("/access-denied").permitAll()
 

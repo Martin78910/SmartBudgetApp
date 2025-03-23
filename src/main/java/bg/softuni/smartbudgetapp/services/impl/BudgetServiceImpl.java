@@ -1,10 +1,12 @@
 package bg.softuni.smartbudgetapp.services.impl;
 
 
+import bg.softuni.smartbudgetapp.models.AccountEntity;
 import bg.softuni.smartbudgetapp.models.BudgetEntity;
 import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import bg.softuni.smartbudgetapp.models.UserEntity;
 import bg.softuni.smartbudgetapp.models.dto.BudgetDTO;
+import bg.softuni.smartbudgetapp.repositories.AccountRepository;
 import bg.softuni.smartbudgetapp.repositories.BudgetRepository;
 import bg.softuni.smartbudgetapp.repositories.UserRepository;
 import bg.softuni.smartbudgetapp.services.BudgetService;
@@ -18,10 +20,13 @@ public class BudgetServiceImpl implements BudgetService {
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
 
+
+
     public BudgetServiceImpl(BudgetRepository budgetRepository,
-                             UserRepository userRepository) {
+                             UserRepository userRepository, AccountRepository accountRepository) {
         this.budgetRepository = budgetRepository;
         this.userRepository = userRepository;
+
     }
 
     @Override
@@ -38,6 +43,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public BudgetDTO createBudget(BudgetDTO budgetDTO, Long userId) {
+
         // 1. Намираме UserEntity
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

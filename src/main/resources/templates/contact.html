@@ -56,24 +56,27 @@
             <ul>
                 <li>Адрес: ул. "Примерна" №10, гр. София, България</li>
                 <li>Телефон: +359 123 456 789</li>
-                <li>Имейл: support@smartbudget.bg</li>
+                <li>Имейл: newsmartbudgetapp@gmail.com</li>
             </ul>
             <hr/>
 
             <h3>Пишете ни директно</h3>
-            <!-- Примерна форма за изпращане на съобщение (статична) -->
-            <form th:action="@{/contact/send}" method="post" class="needs-validation">
+            <!-- Форма за изпращане на съобщение -->
+            <form th:action="@{/contact/send}" th:object="${contactFormDto}" method="post" class="needs-validation">
                 <div class="mb-3">
                     <label for="name" class="form-label">Вашето име</label>
-                    <input type="text" class="form-control" id="name" name="senderName" required>
+                    <input type="text" class="form-control" id="name" th:field="*{senderName}">
+                    <div class="text-danger" th:if="${#fields.hasErrors('senderName')}" th:errors="*{senderName}"></div>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Вашият имейл</label>
-                    <input type="email" class="form-control" id="email" name="senderEmail" required>
+                    <input type="email" class="form-control" id="email" th:field="*{senderEmail}">
+                    <div class="text-danger" th:if="${#fields.hasErrors('senderEmail')}" th:errors="*{senderEmail}"></div>
                 </div>
                 <div class="mb-3">
                     <label for="message" class="form-label">Съобщение</label>
-                    <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                    <textarea class="form-control" id="message" rows="4" th:field="*{message}"></textarea>
+                    <div class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></div>
                 </div>
                 <button type="submit" class="btn btn-primary">Изпрати</button>
             </form>
