@@ -24,16 +24,27 @@ public class AdviceRestController {
 
     @GetMapping
     public ResponseEntity<String> getAdvice() {
-        // Вика GET endpoint-a на микросървиса
-        String response = restTemplate.getForObject(advisorServiceUrl, String.class);
-        return ResponseEntity.ok(response);
+        try {
+            // Вика GET endpoint-a на микросървиса
+            String response = restTemplate.getForObject(advisorServiceUrl, String.class);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Ако микросървисът не работи, връщаме подходящо съобщение
+            return ResponseEntity.ok("Съветът не е наличен в момента. Опитайте по-късно.");
+        }
     }
+
 
     @PostMapping
     public ResponseEntity<String> postAdvice(@RequestBody AdviceDTO adviceDTO) {
-        // POST заявка към микросървиса
-        String response = restTemplate.postForObject(advisorServiceUrl, adviceDTO, String.class);
-        return ResponseEntity.ok(response);
+        try {
+            // POST заявка към микросървиса
+            String response = restTemplate.postForObject(advisorServiceUrl, adviceDTO, String.class);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.ok("Неуспешно изпращане на съвет. Опитайте по-късно.");
+        }
     }
+
 
 }

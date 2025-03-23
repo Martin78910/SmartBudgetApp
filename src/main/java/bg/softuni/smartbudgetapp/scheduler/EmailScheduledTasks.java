@@ -53,8 +53,8 @@ public class EmailScheduledTasks {
     /**
      * Автоматичен месечен отчет – всяко 1-во число в 08:00
      */
-//    @Scheduled(cron = "0 0 8 1 * ?")
-    @Scheduled(cron = "0 * * * * ?")  // Изпълнява се всяка минута
+   @Scheduled(cron = "0 0 8 1 * ?")
+//    @Scheduled(cron = "0 * * * * ?")  // Изпълнява се всяка минута
     public void sendMonthlyFinancialReport() {
         logger.info(">>> sendMonthlyFinancialReport() стартира!");
 
@@ -108,8 +108,8 @@ public class EmailScheduledTasks {
     /**
      * Ежедневна проверка на изпълнението на бюджета – всеки ден в 10:00
      */
-//    @Scheduled(cron = "0 0 10 * * ?")
-    @Scheduled(cron = "0 * * * * ?")  // Изпълнява се всяка минута
+  @Scheduled(cron = "0 0 10 * * ?")
+//  @Scheduled(cron = "0 * * * * ?")  // Изпълнява се всяка минута
     public void checkBudgetExecution() {
         logger.info("Започва ежедневна проверка на бюджета...");
         List<UserEntity> allUsers = userService.findAllUsers();
