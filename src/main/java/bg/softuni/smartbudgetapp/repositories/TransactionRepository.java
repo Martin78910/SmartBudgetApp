@@ -20,4 +20,10 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
                                        @Param("category") CategoryEnum category);
 
 
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM TransactionEntity t " +
+            "WHERE t.account.id = :accountId AND t.category = :category AND t.income = false")
+    Double getTotalExpensesByAccountAndCategory(@Param("accountId") Long accountId,
+                                                @Param("category") CategoryEnum category);
+
+
 }

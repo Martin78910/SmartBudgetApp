@@ -35,6 +35,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public AccountDTO getAccountById(Long id) {
+        return accountRepository.findById(id)
+                .map(this::mapEntityToDTO)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+
+    @Override
     public AccountDTO createAccount(AccountDTO accountDTO, Long userId) {
 
         UserEntity user = userRepository.findById(userId)

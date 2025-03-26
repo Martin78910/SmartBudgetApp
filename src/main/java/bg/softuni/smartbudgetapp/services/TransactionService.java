@@ -12,5 +12,6 @@ public interface TransactionService {
     double getSpentForCategory(Long userId, CategoryEnum category);
     // връща общите разходи (outbound) за даден userId и категория
     double getTotalSpendingForCategory(Long userId, CategoryEnum category);
+    double getTotalExpensesByAccountAndCategory(Long accountId, CategoryEnum category);
 
 }

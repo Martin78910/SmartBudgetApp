@@ -2,8 +2,10 @@ package bg.softuni.smartbudgetapp.web.controllers;
 
 
 import bg.softuni.smartbudgetapp.models.UserEntity;
+import bg.softuni.smartbudgetapp.models.dto.AccountDTO;
 import bg.softuni.smartbudgetapp.models.dto.BudgetDTO;
 import bg.softuni.smartbudgetapp.repositories.CategoryRepository;
+import bg.softuni.smartbudgetapp.services.AccountService;
 import bg.softuni.smartbudgetapp.services.BudgetService;
 import bg.softuni.smartbudgetapp.services.UserService;
 import jakarta.validation.Valid;
@@ -16,20 +18,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/users/budgets")
 public class BudgetController {
 
     private final BudgetService budgetService;
-    private final CategoryRepository categoryRepository; // или CategoryService, ако имате
+    private final CategoryRepository categoryRepository;
     private final UserService userService;
+    private final AccountService accountService;
+
 
     public BudgetController(BudgetService budgetService,
-                            CategoryRepository categoryRepository, UserService userService) {
+                            CategoryRepository categoryRepository, UserService userService, AccountService accountService) {
         this.budgetService = budgetService;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
+        this.accountService = accountService;
     }
     @GetMapping
     public String showBudgets(Model model, Principal principal) {
@@ -51,6 +57,8 @@ public class BudgetController {
             model.addAttribute("budgetDTO", new BudgetDTO());
         }
         model.addAttribute("allCategories", categoryRepository.findAll());
+        List<AccountDTO> allAccounts = accountService.getAllAccountsForUser(user.getId());
+        model.addAttribute("allAccounts", allAccounts);
 
         return "budgets";
     }
@@ -62,28 +70,34 @@ public class BudgetController {
             Principal principal,
             Model model) {
 
-        if (bindingResult.hasErrors()) {
-            // При грешки, зареждаме пак budgets.html
-            String currentUserEmail = principal.getName();
-            UserEntity user = userService.findByEmail(currentUserEmail);
-            var budgets = budgetService.getAllBudgetsForUser(user.getId());
-            model.addAttribute("budgets", budgets);
-            model.addAttribute("allCategories", categoryRepository.findAll());
-            return "budgets";
-        }
-
-        // 1. текущия потребител
         String currentUserEmail = principal.getName();
         UserEntity user = userService.findByEmail(currentUserEmail);
+
         if (user == null) {
             throw new RuntimeException("Logged user not found in DB!");
         }
 
-        // 2. Създаване
-        budgetService.createBudget(budgetDTO, user.getId());
+        AccountDTO selectedAccount = accountService.getAccountById(budgetDTO.getAccountId());
 
+        Double totalUsed = budgetService.getTotalBudgetAmountByAccountId(budgetDTO.getAccountId());
+        Double available = selectedAccount.getBalance() - totalUsed;
+
+        if (available < budgetDTO.getMonthlyLimit()) {
+            bindingResult.rejectValue("accountId", "error.accountId",
+                    "Недостатъчен остатък по сметката. Налично: " + available + " лв., изискуемо: "
+                            + budgetDTO.getMonthlyLimit() + " лв.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            var budgets = budgetService.getAllBudgetsForUser(user.getId());
+            model.addAttribute("budgets", budgets);
+            model.addAttribute("allCategories", categoryRepository.findAll());
+            model.addAttribute("allAccounts", accountService.getAllAccountsForUser(user.getId()));
+            return "budgets";
+        }
+
+        budgetService.createBudget(budgetDTO, user.getId());
         return "redirect:/users/budgets";
     }
-
 
 }

@@ -10,4 +10,5 @@ public interface AccountService {
 
     AccountDTO createAccount(AccountDTO accountDTO, Long userId);
 
+    AccountDTO getAccountById(Long id);
 }

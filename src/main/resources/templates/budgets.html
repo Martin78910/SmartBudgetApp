@@ -57,7 +57,6 @@
 </nav>
 
 
-
 <h1>Настройки на бюджетите</h1>
 <table>
     <tr>
@@ -71,23 +70,66 @@
 </table>
 
 <!-- Форма за добавяне/редакция -->
-<form th:action="@{/users/budgets/create}" th:object="${budgetDTO}" method="post">
+<form id="budget-form" th:action="@{/users/budgets/create}" th:object="${budgetDTO}" method="post" onsubmit="return validateBalance()">
+    <div>
+        <label>Сметка:</label>
+        <select id="account-select" th:field="*{accountId}" onchange="checkSelectedBalance()">
+            <option value="" disabled selected>Избери сметка</option>
+            <option th:each="acc : ${allAccounts}" th:value="${acc.id}" th:text="${acc.accountName + ' (' + acc.balance + ' лв.)'}" th:data-balance="${acc.balance}"></option>
+        </select>
+        <p class="text-danger" th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}"></p>
+    </div>
     <div>
         <label>Категория:</label>
         <select th:field="*{category}">
             <option value="" disabled selected>Избери категория</option>
-            <option th:each="cat : ${allCategories}"
-                    th:value="${cat.code}"
-                    th:text="${cat.code}">
-            </option>
+            <option th:each="cat : ${allCategories}" th:value="${cat.code}" th:text="${cat.code}"></option>
         </select>
     </div>
     <div>
         <label>Месечен лимит:</label>
         <input th:field="*{monthlyLimit}" type="number"/>
     </div>
+    <p id="balance-warning" style="color:red; display:none;">Не може да създадете бюджет по избраната категория, защото балансът по сметката е 0</p>
     <button type="submit">Запази</button>
 </form>
+
+<footer class="bg-dark text-white text-center mt-5 p-3">
+    SmartBudget &copy; 2025. Всички права запазени.
+</footer>
+
+<script>
+    function checkSelectedBalance() {
+        const select = document.getElementById('account-select');
+        const selectedOption = select.options[select.selectedIndex];
+        const balance = parseFloat(selectedOption.getAttribute('data-balance'));
+        const warning = document.getElementById('balance-warning');
+
+        if (balance === 0) {
+            warning.style.display = 'block';
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+
+    function validateBalance() {
+        const select = document.getElementById('account-select');
+        const selectedOption = select.options[select.selectedIndex];
+        const balance = parseFloat(selectedOption.getAttribute('data-balance'));
+
+        const monthlyLimit = parseFloat(document.querySelector('[name="monthlyLimit"]').value);
+
+        if (isNaN(balance) || isNaN(monthlyLimit)) {
+            return true;
+        }
+
+        if (balance < monthlyLimit) {
+            alert("Балансът по сметката е по-малък от въведения месечен лимит. Моля, изберете друга сметка или въведете по-малък лимит.");
+            return false;
+        }
+        return true;
+    }
+</script>
 
 <!-- Footer -->
 <footer class="bg-dark text-white text-center mt-5 p-3">

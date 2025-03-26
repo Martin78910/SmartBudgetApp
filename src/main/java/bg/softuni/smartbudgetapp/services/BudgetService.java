@@ -12,4 +12,19 @@ public interface BudgetService {
     BudgetDTO createBudget(BudgetDTO budgetDTO, Long userId);
 
     double getMonthlyLimit(Long userId, CategoryEnum category);
+
+    Double getTotalBudgetAmountByAccountId(Long accountId);
+
+    Double getLimitByAccountIdAndCategory(Long accountId, CategoryEnum category);
+
+
+    /**
+     * Извлича списък с категории, които имат активни бюджети за дадена сметка.
+     * Активен бюджет е такъв, който има останали средства (monthlyLimit > 0).
+     *
+     * @param accountId Идентификатор на сметката
+     * @return Списък с активни категории
+     */
+    List<CategoryEnum> getActiveCategoriesForAccount(Long accountId);
+
 }

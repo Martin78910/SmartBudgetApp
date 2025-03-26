@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "budgets")
 public class BudgetEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +19,8 @@ public class BudgetEntity {
     @ManyToOne
     private UserEntity user;
 
+    @ManyToOne
+    private AccountEntity account;
 
     public BudgetEntity() {
     }
@@ -54,5 +55,13 @@ public class BudgetEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public AccountEntity getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountEntity account) {
+        this.account = account;
     }
 }

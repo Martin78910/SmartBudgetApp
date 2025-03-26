@@ -1,6 +1,5 @@
 package bg.softuni.smartbudgetapp.web.controllers;
 
-
 import bg.softuni.smartbudgetapp.models.UserEntity;
 import bg.softuni.smartbudgetapp.models.dto.AccountDTO;
 import bg.softuni.smartbudgetapp.models.dto.AdviceDTO;
@@ -17,16 +16,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * Контролер за управление на транзакциите в приложението Smart Budget.
+ * Обработва показването, добавянето и валидирането на транзакции за потребителски сметки.
+ */
 @Controller
 @RequestMapping("/users/transactions")
 public class TransactionController {
+
+    // Сървис зависимости за управление на транзакциите
     private final TransactionService transactionService;
     private final CategoryService categoryService;
     private final AccountService accountService;
     private final UserService userService;
-    private final BudgetService budgetService;   // за да вземем лимита
-    private final RestTemplate restTemplate;     // за да извикаме микросървиса (през localhost:8080/api/advice)
+    private final BudgetService budgetService;
+    private final RestTemplate restTemplate;
 
+    /**
+     * Конструктор за инжектиране на необходимите сървиси.
+     */
     public TransactionController(TransactionService transactionService,
                                  CategoryService categoryService,
                                  AccountService accountService,
@@ -41,26 +49,41 @@ public class TransactionController {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * Обработва GET заявка за показване на транзакции.
+     *
+     * @param accountId Незадължителен идентификатор на сметка за филтриране на транзакциите
+     * @param modelSpring MVC модел за предаване на данни към изгледа
+     * @param principal Информация за автентикация на текущия потребител
+     * @return Име на изгледа за страницата с транзакции
+     */
     @GetMapping
     public String showTransactions(@RequestParam(name = "accountId", required = false) Long accountId,
                                    Model model,
                                    Principal principal) {
 
-        // 1) Намираме логнатия user
+        // Извличане на влезлия потребител по имейл
         String email = principal.getName();
         UserEntity user = userService.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("Logged user not found!");
+
+        // Инициализиране на нов DTO за транзакция, ако не съществува
+        if (!model.containsAttribute("transactionDTO")) {
+            model.addAttribute("transactionDTO", new TransactionDTO());
         }
 
-        // 2) Списък от акаунти за падащото меню
+        // Хвърляне на изключение, ако потребителят не е намерен
+        if (user == null) {
+            throw new RuntimeException("Потребителят не е намерен!");
+        }
+
+        // Зареждане на сметките на потребителя
         List<AccountDTO> userAccounts = accountService.getAllAccountsForUser(user.getId());
         model.addAttribute("accounts", userAccounts);
 
-        // 3) Ако accountId е подадено, взимаме транзакциите за тази сметка
         List<TransactionDTO> transactions;
         TransactionDTO transactionDTO = new TransactionDTO();
 
+        // Филтриране на транзакциите по избрана сметка
         if (accountId != null) {
             transactions = transactionService.getTransactionsByAccountId(accountId);
             transactionDTO.setAccountId(accountId);
@@ -69,70 +92,100 @@ public class TransactionController {
             transactions = List.of();
         }
 
+        // Добавяне на атрибути за визуализация
         model.addAttribute("transactions", transactions);
         model.addAttribute("transactionDTO", transactionDTO);
-
-        // dropdown за категориите
         model.addAttribute("allCategories", categoryService.getAllCategories());
 
         return "transactions";
     }
 
+    /**
+     * Обработва POST заявка за добавяне на нова транзакция.
+     *
+     * @param transactionDTO Обект за пренос на данни за транзакция
+     * @param bindingResult Резултат от валидацията
+     * @param model Spring MVC модел
+     * @param principal Информация за автентикация на текущия потребител
+     * @param redirectAttrsAttributes за пренасочване с флаш съобщения
+     * @return Пренасочване към страницата с транзакции или връщане към формата с грешки
+     */
     @PostMapping("/add")
-    public String addTransaction(
-            @Valid @ModelAttribute("transactionDTO") TransactionDTO transactionDTO,
-            BindingResult bindingResult,
-            Model model,
-            Principal principal,
-            RedirectAttributes redirectAttrs) {
+    public String addTransaction(@Valid @ModelAttribute("transactionDTO") TransactionDTO transactionDTO,
+                                 BindingResult bindingResult,
+                                 Model model,
+                                 Principal principal,
+                                 RedirectAttributes redirectAttrs) {
 
+        // Извличане на влезлия потребител
+        String email = principal.getName();
+        UserEntity user = userService.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("Потребителят не е намерен!");
+        }
+
+        Long accountId = transactionDTO.getAccountId();
+        var category = transactionDTO.getCategory();
+
+        // Допълнителна валидация за разходни транзакции
+        if (!transactionDTO.isIncome()) {
+            // Извличане на месечния лимит за категорията и сметката
+            Double monthlyLimit = budgetService.getLimitByAccountIdAndCategory(accountId, category);
+
+            if (monthlyLimit != null && monthlyLimit > 0) {
+                // Изчисляване на досегашните разходи за категорията
+                double spentSoFar = transactionService.getTotalExpensesByAccountAndCategory(accountId, category);
+
+                // Изчисляване на новия общ разход
+                double newTotalSpent = spentSoFar + transactionDTO.getAmount();
+
+                // Спиране на транзакцията, ако надвишава бюджета
+                if (newTotalSpent > monthlyLimit) {
+                    // Предоставяне на специфично съобщение за оставащия бюджет
+                    bindingResult.rejectValue("amount", "error.amount",
+                            "Надвишен бюджет за категория " + category +
+                                    ". Налични средства: " + String.format("%.2f", (monthlyLimit - spentSoFar)));
+
+                    // Възстановяване на модела с текущото състояние
+                    model.addAttribute("transactions", transactionService.getTransactionsByAccountId(accountId));
+                    model.addAttribute("transactionDTO", transactionDTO);
+                    model.addAttribute("accounts", accountService.getAllAccountsForUser(user.getId()));
+                    model.addAttribute("selectedAccountId", accountId);
+                    model.addAttribute("allCategories", categoryService.getAllCategories());
+                    return "transactions";
+                }
+
+                // Извикване на микросървис при достигане на 90% от бюджета
+                double spentPercentage = (newTotalSpent / monthlyLimit) * 100;
+                if (spentPercentage >= 90) {
+                    // Подготвяне на DTO с информация за разходите
+                    AdviceDTO adviceDTO = new AdviceDTO();
+                    adviceDTO.setUserEmail(user.getEmail());
+                    adviceDTO.setCurrentSpending(newTotalSpent);
+                    adviceDTO.setBudgetLimit(monthlyLimit);
+
+                    // Извикване на външен микросървис за съвет
+                    String adviceMessage = restTemplate.postForObject(
+                            "http://localhost:8080/api/advice",
+                            adviceDTO,
+                            String.class
+                    );
+
+                    // Добавяне на съобщението за визуализация
+                    redirectAttrs.addFlashAttribute("adviceMessage", adviceMessage);
+                }
+            }
+        }
+
+        // Връщане към формата, ако има грешки при валидацията
         if (bindingResult.hasErrors()) {
             return "transactions";
         }
 
-        // 1) Добавяме транзакцията
+        // Запазване на транзакцията
         TransactionDTO savedTx = transactionService.addTransaction(transactionDTO);
 
-        // 2) Намираме логнатия потребител (за userId)
-        String email = principal.getName();
-        UserEntity user = userService.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("Logged user not found!");
-        }
-        Long userId = user.getId();
-
-        // 3) Ако е разход (income=false), проверяваме лимита
-        if (!savedTx.isIncome()) {
-            // колко е лимитът за тази категория
-            double monthlyLimit = budgetService.getMonthlyLimit(userId, savedTx.getCategory());
-            // колко похарчено до момента (включително новата транзакция)
-            double spentSoFar = transactionService.getSpentForCategory(userId, savedTx.getCategory());
-
-            // Ако сме над 90% от лимита (или самия лимит) => викаме микросървиса
-            if (monthlyLimit > 0 && spentSoFar >= monthlyLimit * 0.9) {
-                // подготвяме AdviceDTO
-                AdviceDTO adviceDTO = new AdviceDTO();
-                adviceDTO.setUserEmail(user.getEmail());
-                adviceDTO.setCurrentSpending(spentSoFar);
-                adviceDTO.setBudgetLimit(monthlyLimit);
-
-                // Викаме /api/advice в същото приложение, което от своя страна говори с микросървиса
-                String adviceMessage = restTemplate.postForObject(
-                        "http://localhost:8080/api/advice",
-                        adviceDTO,
-                        String.class
-                );
-
-                // Слагаме го като flash-attribute, за да се появи след redirect
-                redirectAttrs.addFlashAttribute("adviceMessage", adviceMessage);
-            }
-        }
-
-        // 4) Редиректваме към GET метода, за да не зареждаме ръчно списъка
-        if (savedTx.getAccountId() == null) {
-            return "redirect:/users/transactions";
-        } else {
-            return "redirect:/users/transactions?accountId=" + savedTx.getAccountId();
-        }
+        // Пренасочване към списъка с транзакции за конкретната сметка
+        return "redirect:/users/transactions?accountId=" + savedTx.getAccountId();
     }
 }
