@@ -113,10 +113,10 @@
                         th:each="cat : ${allCategories}"
                         th:value="${cat.code}"
                         th:text="${cat.code}"
-                        th:disabled="${allCategories.isEmpty()}"
+                        th:disabled="${availableCategories == null || !availableCategories.contains(cat.code)}"
                 ></option>
                 <option
-                        th:if="${allCategories.isEmpty()}"
+                        th:if="${availableCategories != null && availableCategories.isEmpty()}"
                         value=""
                         disabled
                 >Няма налични категории с бюджет</option>
@@ -136,6 +136,23 @@
 
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accountSelect = document.querySelector('select[name="accountId"]');
+
+        if (accountSelect) {
+            accountSelect.addEventListener('change', function() {
+                const accountId = this.value;
+                if (accountId) {
+                    // Пренасочваме към същата страница с избраната сметка като параметър
+                    window.location.href = '/users/transactions?accountId=' + accountId;
+                }
+            });
+        }
+    });
+</script>
+
 
 <!--  Footer -->
 <footer class="bg-dark text-white text-center mt-5 p-3">

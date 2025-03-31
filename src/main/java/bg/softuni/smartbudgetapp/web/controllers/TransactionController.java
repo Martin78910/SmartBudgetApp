@@ -1,5 +1,6 @@
 package bg.softuni.smartbudgetapp.web.controllers;
 
+import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import bg.softuni.smartbudgetapp.models.UserEntity;
 import bg.softuni.smartbudgetapp.models.dto.AccountDTO;
 import bg.softuni.smartbudgetapp.models.dto.AdviceDTO;
@@ -88,8 +89,13 @@ public class TransactionController {
             transactions = transactionService.getTransactionsByAccountId(accountId);
             transactionDTO.setAccountId(accountId);
             model.addAttribute("selectedAccountId", accountId);
+
+            // Получаваме само категориите, за които има бюджет за избраната сметка
+            List<CategoryEnum> availableCategories = budgetService.getActiveCategoriesForAccount(accountId);
+            model.addAttribute("availableCategories", availableCategories);
         } else {
             transactions = List.of();
+            model.addAttribute("availableCategories", List.of());
         }
 
         // Добавяне на атрибути за визуализация
@@ -99,7 +105,6 @@ public class TransactionController {
 
         return "transactions";
     }
-
     /**
      * Обработва POST заявка за добавяне на нова транзакция.
      *
