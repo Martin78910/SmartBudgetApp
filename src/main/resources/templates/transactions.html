@@ -75,7 +75,11 @@
         </tr>
         </tbody>
     </table>
-
+<div>
+    <button class="btn btn-primary" onclick="location.href='/users/budget-report'">
+        Виж отчет за бюджета
+    </button>
+</div>
     <!-- Форма за добавяне на нова трансакция -->
     <form th:action="@{/users/transactions/add}" th:object="${transactionDTO}" method="post" class="row g-3 mt-5">
 

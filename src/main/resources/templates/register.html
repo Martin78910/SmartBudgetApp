@@ -2,15 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Регистрация</title>
-        <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
     <!-- Custom CSS -->
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
+<!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}">SmartBudget</a>
@@ -41,43 +42,47 @@
     </div>
 </nav>
 
+<!-- Центрирана форма -->
+<div class="container flex-grow-1 d-flex justify-content-center align-items-center">
+    <div class="w-100" style="max-width: 500px;">
+        <h1 class="text-center mb-4">Регистрация</h1>
 
-<h1>Регистрация</h1>
+        <form th:action="@{/users/register}" th:object="${userRegisterDTO}" method="post">
+            <div>
+                <label>Email:</label>
+                <input th:field="*{email}" type="text" />
+                <span th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}"></span>
+            </div>
+            <div>
+                <label>Password:</label>
+                <input th:field="*{password}" type="password" />
+                <span th:if="${#fields.hasErrors('password')}"
+                      th:errors="*{password}"></span>
+            </div>
+            <div>
+                <label>Confirm Password:</label>
+                <input th:field="*{confirmPassword}" type="password" />
+                <span th:if="${#fields.hasErrors('confirmPassword')}"
+                      th:errors="*{confirmPassword}"></span>
+            </div>
+            <div>
+                <label>Full Name:</label>
+                <input th:field="*{fullName}" type="text" />
+                <span th:if="${#fields.hasErrors('fullName')}"
+                      th:errors="*{fullName}"></span>
+            </div>
 
-<form th:action="@{/users/register}" th:object="${userRegisterDTO}" method="post">
-    <div>
-        <label>Email:</label>
-        <input th:field="*{email}" type="text" />
-        <span th:if="${#fields.hasErrors('email')}" 
-              th:errors="*{email}"></span>
+            <button type="submit">Регистрация</button>
+        </form>
     </div>
-    <div>
-        <label>Password:</label>
-        <input th:field="*{password}" type="password" />
-        <span th:if="${#fields.hasErrors('password')}" 
-              th:errors="*{password}"></span>
-    </div>
-    <div>
-        <label>Confirm Password:</label>
-        <input th:field="*{confirmPassword}" type="password" />
-        <span th:if="${#fields.hasErrors('confirmPassword')}" 
-              th:errors="*{confirmPassword}"></span>
-    </div>
-    <div>
-        <label>Full Name:</label>
-        <input th:field="*{fullName}" type="text" />
-        <span th:if="${#fields.hasErrors('fullName')}" 
-              th:errors="*{fullName}"></span>
-    </div>
+</div>
 
-    <button type="submit">Регистрация</button>
-</form>
-
-<footer class="bg-dark text-white text-center mt-5 p-3">
+<!-- Footer -->
+<footer class="bg-dark text-white text-center p-3">
     SmartBudget &copy; 2025. Всички права запазени.
 </footer>
 
 <script th:src="@{/js/bootstrap.min.js}"></script>
-
 </body>
 </html>

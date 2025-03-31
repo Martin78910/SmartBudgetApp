@@ -4,11 +4,14 @@
     <title>Вход</title>
     <!-- Bootstrap CSS -->
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Custom CSS -->
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
+<!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}">SmartBudget</a>
@@ -39,7 +42,11 @@
     </div>
 </nav>
 
-<h1>Вход в SmartBudget</h1>
+<!-- Центрирана форма -->
+<div class="container flex-grow-1 d-flex justify-content-center align-items-center">
+    <div class="w-100" style="max-width: 500px;">
+        <h1 class="text-center mb-4">Вход в SmartBudget</h1>
+
 
 <!-- Показваме съобщение при грешни креденшъли => ?error параметър -->
 <div th:if="${param.error}" class="text-danger">
@@ -63,10 +70,12 @@
 
     <button type="submit">Вход</button>
 </form>
+    </div>
+</div>
 
 <!-- Линкове за социален вход (Google, Facebook) -->
-<a th:href="@{/oauth2/authorization/google}">Влез с Google</a>
-<a th:href="@{/oauth2/authorization/facebook}">Влез с Facebook</a>
+<!--<a th:href="@{/oauth2/authorization/google}">Влез с Google</a>-->
+<!--<a th:href="@{/oauth2/authorization/facebook}">Влез с Facebook</a>-->
 
 <footer class="bg-dark text-white text-center mt-5 p-3">
     SmartBudget &copy; 2025. Всички права запазени.

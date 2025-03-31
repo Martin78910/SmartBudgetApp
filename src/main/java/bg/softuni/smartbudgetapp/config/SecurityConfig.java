@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/accounts").authenticated()
                         .requestMatchers("/users/budgets").authenticated()
                         .requestMatchers("/users/transactions").authenticated()
+                         .requestMatchers("/users/budget-report").authenticated()
 
                         .anyRequest().authenticated()
                 )

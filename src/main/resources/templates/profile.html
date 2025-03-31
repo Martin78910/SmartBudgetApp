@@ -9,7 +9,7 @@
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -56,9 +56,11 @@
     </div>
 </nav>
 
+<!-- Центрирана форма -->
+<div class="container flex-grow-1 d-flex justify-content-center align-items-center">
+    <div class="w-100" style="max-width: 500px;">
+        <h1 class="text-center mb-4">Профил на потребителя</h1>
 
-
-<h1>Профил на потребителя</h1>
 <img th:src="${(user.profilePictureUrl == null or #strings.isEmpty(user.profilePictureUrl))
                  ? 'https://cdn0.iconfinder.com/data/icons/cryptocurrency-137/128/1_profile_user_avatar_account_person-132-256.png'
                  : user.profilePictureUrl}"
@@ -71,17 +73,8 @@
 <a th:href="@{/users/profile/update}" class="btn btn-warning">Редакция на профила</a>
 </div>
 
-<!-- 2FA проверка -->
-<div>
-    <h3>2FA (Google Authenticator)</h3>
-    <img th:src="@{/2fa/qr}" alt="2FA QR Code" />
-    <!-- 2FA код: -->
-    <form th:action="@{/2fa/verify}" method="post">
-        <input type="text" name="code" placeholder="123456"/>
-        <button type="submit">Verify 2FA</button>
-    </form>
+    </div>
 </div>
-
 <!-- Footer -->
 <footer class="bg-dark text-white text-center mt-5 p-3">
     SmartBudget &copy; 2025. Всички права запазени.

@@ -3,6 +3,7 @@ package bg.softuni.smartbudgetapp.services.impl;
 import bg.softuni.smartbudgetapp.models.AccountEntity;
 import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import bg.softuni.smartbudgetapp.models.TransactionEntity;
+import bg.softuni.smartbudgetapp.models.dto.BudgetReportDTO;
 import bg.softuni.smartbudgetapp.models.dto.TransactionDTO;
 import bg.softuni.smartbudgetapp.repositories.AccountRepository;
 import bg.softuni.smartbudgetapp.repositories.TransactionRepository;
@@ -11,7 +12,11 @@ import bg.softuni.smartbudgetapp.services.TransactionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +27,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final BudgetService budgetService;
 
     public TransactionServiceImpl(
-            TransactionRepository transactionRepository, 
+            TransactionRepository transactionRepository,
             AccountRepository accountRepository,
             BudgetService budgetService) {
         this.transactionRepository = transactionRepository;
@@ -50,20 +55,20 @@ public class TransactionServiceImpl implements TransactionService {
         if (!transactionDTO.isIncome()) {
             Long accountId = transactionDTO.getAccountId();
             CategoryEnum category = transactionDTO.getCategory();
-            
+
             // Извличане на месечния лимит за категорията
             Double monthlyLimit = budgetService.getLimitByAccountIdAndCategory(accountId, category);
-            
+
             // Проверка дали лимитът е дефиниран
             if (monthlyLimit != null && monthlyLimit > 0) {
                 // Изчисляване на досегашните разходи
                 double spentSoFar = getTotalExpensesByAccountAndCategory(accountId, category);
-                
+
                 // Проверка дали новата трансакция ще надвиши бюджета
                 if (spentSoFar + transactionDTO.getAmount() > monthlyLimit) {
                     throw new RuntimeException(
-                        "Надвишен бюджет за категория " + category + 
-                        ". Налични средства: " + (monthlyLimit - spentSoFar)
+                            "Надвишен бюджет за категория " + category +
+                                    ". Налични средства: " + (monthlyLimit - spentSoFar)
                     );
                 }
             }
@@ -79,12 +84,12 @@ public class TransactionServiceImpl implements TransactionService {
         transactionEntity.setDescription(transactionDTO.getDescription());
         transactionEntity.setCategory(transactionDTO.getCategory());
         transactionEntity.setIncome(transactionDTO.isIncome());
-        
+
         // Използване на подадена дата или текуща дата
         transactionEntity.setTransactionDate(
-            transactionDTO.getTransactionDate() != null
-                ? transactionDTO.getTransactionDate()
-                : LocalDateTime.now()
+                transactionDTO.getTransactionDate() != null
+                        ? transactionDTO.getTransactionDate()
+                        : LocalDateTime.now()
         );
         transactionEntity.setAccount(account);
 
@@ -102,12 +107,12 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setCategory(entity.getCategory());
         dto.setIncome(entity.isIncome());
         dto.setTransactionDate(entity.getTransactionDate());
-        
+
         // Добавяне на ID на сметката, ако съществува
         if (entity.getAccount() != null) {
             dto.setAccountId(entity.getAccount().getId());
         }
-        
+
         return dto;
     }
 
@@ -138,5 +143,54 @@ public class TransactionServiceImpl implements TransactionService {
         // Извличане на разходите за сметка и категория
         Double sum = transactionRepository.getTotalExpensesByAccountAndCategory(accountId, category);
         return (sum != null) ? sum : 0.0;
+    }
+
+
+    /**
+     * Извлича данни за отчета на бюджета за конкретен месец и година.
+     * Групира разходите по категория и изчислява общата сума за всяка категория.
+     *
+     * @param userId ID на потребителя
+     * @param month Месец (1-12)
+     * @param year Година
+     * @return Списък от DTO обекти с информация за всяка категория разходи
+     */
+    @Override
+    public List<BudgetReportDTO> getBudgetReportData(Long userId, int month, int year) {
+        // Създаваме начална и крайна дата за месеца
+        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endOfMonth = YearMonth.of(year, month).atEndOfMonth().atTime(23, 59, 59);
+
+        // Получаваме всички сметки на потребителя
+        List<AccountEntity> userAccounts = accountRepository.findByOwner_Id(userId);
+        List<Long> accountIds = userAccounts.stream()
+                .map(AccountEntity::getId)
+                .collect(Collectors.toList());
+
+        // Извличаме всички разходни транзакции за сметките на потребителя в избрания месец
+        List<TransactionEntity> transactions = transactionRepository.findByAccountIdInAndTransactionDateBetweenAndIncomeIsFalse(
+                accountIds, startOfMonth, endOfMonth);
+
+        // Групираме транзакциите по категория и калкулираме общата сума за всяка категория
+        Map<CategoryEnum, Double> categoryTotals = new HashMap<>();
+
+        for (TransactionEntity transaction : transactions) {
+            CategoryEnum category = transaction.getCategory();
+            double amount = transaction.getAmount();
+
+            categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + amount);
+        }
+
+        // Преобразуваме категориите и сумите в списък от DTO обекти
+        List<BudgetReportDTO> reportData = new ArrayList<>();
+
+        for (Map.Entry<CategoryEnum, Double> entry : categoryTotals.entrySet()) {
+            String categoryName = entry.getKey().toString();
+            double amount = entry.getValue();
+
+            reportData.add(new BudgetReportDTO(categoryName, amount));
+        }
+
+        return reportData;
     }
 }

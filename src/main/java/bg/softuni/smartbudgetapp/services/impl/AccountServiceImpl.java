@@ -22,13 +22,12 @@ public class AccountServiceImpl implements AccountService {
         this.userRepository = userRepository;
     }
 
-
     @Override
     public List<AccountDTO> getAllAccountsForUser(Long userId) {
-        // 1. Ползваме findAllByOwnerId(...)
-        List<AccountEntity> userAccounts = accountRepository.findAllByOwnerId(userId);
+        // Промяна: използваме findAllByOwner_Id вместо findAllByOwnerId
+        List<AccountEntity> userAccounts = accountRepository.findAllByOwner_Id(userId);
 
-        // 2. Мапваме към DTO
+        // Мапваме към DTO
         return userAccounts.stream()
                 .map(this::mapEntityToDTO)
                 .toList();
@@ -41,10 +40,8 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
-
     @Override
     public AccountDTO createAccount(AccountDTO accountDTO, Long userId) {
-
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -67,5 +64,4 @@ public class AccountServiceImpl implements AccountService {
         dto.setBalance(entity.getBalance());
         return dto;
     }
-
 }
