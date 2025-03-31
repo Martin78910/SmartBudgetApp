@@ -6,12 +6,12 @@ import jakarta.validation.constraints.Size;
 
 public class UserLoginDTO {
 
-    @NotBlank
-    @Email(message = "Please enter a valid email")
+    @NotBlank (message = "Полето не може да бъде празно")
+    @Email(message = "Моля попълнете валиден email  ")
     private String email;
 
-    @NotBlank
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @NotBlank(message = "Полето не може да бъде празно")
+    @Size(min = 6, message = "Паролата трябва да бъде най-малко 6 символа")
     private String password;
 
     public UserLoginDTO() {

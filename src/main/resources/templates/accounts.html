@@ -57,38 +57,46 @@
     </div>
 </nav>
 
+<div class="container mt-4">
+    <h1 class="text-center">Моите сметки</h1>
 
-<h1>Моите сметки</h1>
-<table>
+    <!-- Таблица с въведени сметки -->
+<table class="table table-striped mt-4">
+    <thead>
     <tr>
         <th>Име</th>
         <th>Тип</th>
         <th>Баланс</th>
     </tr>
+    </thead>
+    <tbody>
     <tr th:each="acc : ${accounts}">
         <td th:text="${acc.accountName}"></td>
         <td th:text="${acc.accountType}"></td>
         <td th:text="${acc.balance}"></td>
     </tr>
+    </tbody>
 </table>
 
 <!-- Форма за добавяне на нова сметка -->
-<form th:action="@{/users/accounts/create}" th:object="${accountDTO}" method="post">
-    <div>
-        <label>Име на сметка:</label>
+<form th:action="@{/users/accounts/create}" th:object="${accountDTO}" method="post" class="row g-3 mt-5">
+    <div class="col-md-4">
+        <label class="form-label">Име на сметка:</label>
         <input th:field="*{accountName}" />
     </div>
-    <div>
-        <label>Тип:</label>
+    <div class="col-md-4">
+        <label class="form-label">Тип:</label>
         <input th:field="*{accountType}" />
     </div>
-    <div>
-        <label>Начален баланс:</label>
+    <div class="col-md-4">
+        <label class="form-label">Начален баланс:</label>
         <input th:field="*{balance}" type="number" />
     </div>
+    <div class="col-12">
     <button type="submit">Добави</button>
+    </div>
 </form>
-
+</div>
 <!-- Footer -->
 <footer class="bg-dark text-white text-center mt-5 p-3">
     SmartBudget &copy; 2025. Всички права запазени.

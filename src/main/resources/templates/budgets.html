@@ -56,44 +56,53 @@
     </div>
 </nav>
 
+<!-- Заглавие на страницата -->
+<div class="container mt-4">
+    <h1 class="text-center">Настройки на бюджетите</h1>
 
-<h1>Настройки на бюджетите</h1>
-<table>
+    <!-- Таблица с въведени бюджети -->
+<table class="table table-striped mt-4">
+    <thead>
     <tr>
         <th>Категория</th>
         <th>Месечен Лимит</th>
     </tr>
+    </thead>
+    <tbody>
     <tr th:each="b : ${budgets}">
         <td th:text="${b.category}"></td>
         <td th:text="${b.monthlyLimit}"></td>
     </tr>
+    </tbody>
 </table>
 
 <!-- Форма за добавяне/редакция -->
-<form id="budget-form" th:action="@{/users/budgets/create}" th:object="${budgetDTO}" method="post" onsubmit="return validateBalance()">
-    <div>
-        <label>Сметка:</label>
-        <select id="account-select" th:field="*{accountId}" onchange="checkSelectedBalance()">
+<form id="budget-form" th:action="@{/users/budgets/create}" th:object="${budgetDTO}" method="post" onsubmit="return validateBalance()" class="row g-3 mt-5">
+    <div class="col-md-4">
+        <label class="form-label">Сметка:</label>
+        <select class="form-select" id="account-select" th:field="*{accountId}" onchange="checkSelectedBalance()">
             <option value="" disabled selected>Избери сметка</option>
             <option th:each="acc : ${allAccounts}" th:value="${acc.id}" th:text="${acc.accountName + ' (' + acc.balance + ' лв.)'}" th:data-balance="${acc.balance}"></option>
         </select>
         <p class="text-danger" th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}"></p>
     </div>
-    <div>
-        <label>Категория:</label>
-        <select th:field="*{category}">
+    <div class="col-md-4">
+        <label class="form-label">Категория:</label>
+        <select class="form-select" th:field="*{category}">
             <option value="" disabled selected>Избери категория</option>
             <option th:each="cat : ${allCategories}" th:value="${cat.code}" th:text="${cat.code}"></option>
         </select>
     </div>
-    <div>
-        <label>Месечен лимит:</label>
+    <div class="col-md-4">
+        <label class="form-label">Месечен лимит:</label>
         <input th:field="*{monthlyLimit}" type="number"/>
     </div>
     <p id="balance-warning" style="color:red; display:none;">Не може да създадете бюджет по избраната категория, защото балансът по сметката е 0</p>
+    <div class="col-12">
     <button type="submit">Запази</button>
+    </div>
 </form>
-
+</div>
 <script>
     function checkSelectedBalance() {
         const select = document.getElementById('account-select');

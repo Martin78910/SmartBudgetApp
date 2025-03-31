@@ -47,7 +47,7 @@
     <div class="w-100" style="max-width: 500px;">
         <h1 class="text-center mb-4">Регистрация</h1>
 
-        <form th:action="@{/users/register}" th:object="${userRegisterDTO}" method="post">
+        <form th:action="@{/users/register}" th:object="${userRegisterDTO}" method="post" class="needs-validation">
             <div>
                 <label>Email:</label>
                 <input th:field="*{email}" type="text" />
