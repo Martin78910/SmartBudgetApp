@@ -10,9 +10,9 @@
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-<!-- Навигация (пример) -->
+<!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}">SmartBudget</a>
@@ -43,7 +43,7 @@
     </div>
 </nav>
 
-<div class="container mt-5">
+<div class="container flex-grow-1 d-flex justify-content-center align-items-center">
     <div class="row">
         <div class="col">
             <h1>Контакти</h1>
@@ -80,6 +80,11 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Изпрати</button>
             </form>
+        </div>
+        <div>
+            <a th:href="@{/about}">За нас</a> |
+            <a th:href="@{/users/login}">Вход</a> |
+            <a th:href="@{/users/register}">Регистрация</a>
         </div>
     </div>
 </div>

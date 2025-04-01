@@ -10,7 +10,7 @@
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -43,8 +43,31 @@
 </nav>
 
 
-<h1>Добре дошли в SmartBudget!</h1>
-<p>Управлявайте финансите си лесно и бързо.</p>
+<div class="container flex-grow-1 mt-4">
+    <div class="row">
+        <div class="col">
+            <h1>SmartBudget</h1>
+            <p>Вашия пръв помощник за умно и ефективно управление на финансите.</p>
+
+            <p>
+                Имате ли нужда от по-добър контрол над финансите си?
+                С помощта на SmartBudget лесно можете да проследявате къде отиват парите ви и да планирате предстоящите си разходи.
+
+            </p>
+
+            <p>
+                Чрез кратки и ясни отчети ще знаете точно къде да оптимизирате бюджета си, без да губите ценно време.
+                Интуитивният интерфейс ви води стъпка по стъпка, независимо дали сте опитен счетоводител или пълен начинаещ.
+
+            </p>
+
+            <p>
+                С SmartBudget не само спестявате време и усилия, но и имате спокойствието, че финансите ви са под контрол.
+                Регистрирайте се сега <a th:href="@{/users/register}">Регистрация</a>  и открийте свободата да управлявате парите си интелигентно.
+                Поставете основите на финансовото си спокойствие, като направите SmartBudget свой доверен партньор.
+
+            </p>
+
 
 <div>
     <a th:href="@{/about}">За нас</a> | 
@@ -52,10 +75,12 @@
     <a th:href="@{/users/login}">Вход</a> |
     <a th:href="@{/users/register}">Регистрация</a>
 </div>
-
+        </div>
+    </div>
+</div>
 </body>
 
-<footer class="bg-dark text-white text-center mt-5 p-3">
+<footer class="bg-dark text-white text-center mt-auto p-3">
     SmartBudget &copy; 2025. Всички права запазени.
 </footer>
 

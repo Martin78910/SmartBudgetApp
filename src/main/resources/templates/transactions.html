@@ -8,7 +8,7 @@
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <!-- Навигация -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -41,7 +41,7 @@
 </nav>
 
 <!-- Заглавие на страницата -->
-<div class="container mt-4">
+<div class="container flex-grow-1 mt-4">
     <h1 class="text-center">Трансакции</h1>
 
     <!-- Съобщение от микросървиса при достигане на 90% от бюджета -->
@@ -155,7 +155,7 @@
 
 
 <!--  Footer -->
-<footer class="bg-dark text-white text-center mt-5 p-3">
+<footer class="bg-dark text-white text-center mt-auto p-3">
     SmartBudget &copy; 2025. Всички права запазени.
 </footer>
 

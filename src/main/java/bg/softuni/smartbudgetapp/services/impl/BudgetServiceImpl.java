@@ -93,6 +93,15 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
+    public List<BudgetDTO> getBudgetsByAccountId(Long accountId) {
+        return budgetRepository.findAll().stream()
+                .filter(b -> b.getAccount() != null && b.getAccount().getId().equals(accountId))
+                .map(this::mapEntityToDTO)
+                .toList();
+    }
+
+
+    @Override
     public Double getTotalBudgetAmountByAccountId(Long accountId) {
         return budgetRepository.getTotalBudgetAmountByAccountId(accountId);
     }
@@ -102,6 +111,12 @@ public class BudgetServiceImpl implements BudgetService {
         dto.setId(entity.getId());
         dto.setCategory(entity.getCategory());
         dto.setMonthlyLimit(entity.getMonthlyLimit());
+
+        if (entity.getAccount() != null) {
+            dto.setAccountId(entity.getAccount().getId());
+            dto.setAccountName(entity.getAccount().getAccountName());
+        }
+
         return dto;
     }
 

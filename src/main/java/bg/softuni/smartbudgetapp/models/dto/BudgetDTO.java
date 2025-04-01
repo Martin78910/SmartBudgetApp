@@ -1,21 +1,24 @@
 package bg.softuni.smartbudgetapp.models.dto;
 
 import bg.softuni.smartbudgetapp.models.CategoryEnum;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class BudgetDTO {
-
     private Long id;
 
-    @NotNull(message = "Category is required")
+    @NotNull(message = "Категорията е задължителна")
     private CategoryEnum category;
 
-    @Min(value = 0, message = "Monthly limit cannot be negative")
+    @NotNull(message = "Месечният лимит е задължителен")
+    @Positive(message = "Лимитът трябва да е положително число")
     private Double monthlyLimit;
 
-    @NotNull(message = "Account is required")
+    @NotNull(message = "Трябва да изберете сметка")
     private Long accountId;
+
+    // Добавяме име на сметка за показване в таблицата
+    private String accountName;
 
     public BudgetDTO() {
     }
@@ -50,6 +53,14 @@ public class BudgetDTO {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
     }
 }
 

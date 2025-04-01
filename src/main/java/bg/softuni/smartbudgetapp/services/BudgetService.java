@@ -27,4 +27,6 @@ public interface BudgetService {
      */
     List<CategoryEnum> getActiveCategoriesForAccount(Long accountId);
 
+    // метод за взимане на бюджети по сметка
+    List<BudgetDTO> getBudgetsByAccountId(Long accountId);
 }
