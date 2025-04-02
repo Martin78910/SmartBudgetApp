@@ -1,5 +1,6 @@
 package bg.softuni.smartbudgetapp.web.controllers;
 
+import bg.softuni.smartbudgetapp.clients.AdvisorServiceClient;
 import bg.softuni.smartbudgetapp.models.CategoryEnum;
 import bg.softuni.smartbudgetapp.models.UserEntity;
 import bg.softuni.smartbudgetapp.models.dto.AccountDTO;
@@ -31,7 +32,8 @@ public class TransactionController {
     private final AccountService accountService;
     private final UserService userService;
     private final BudgetService budgetService;
-    private final RestTemplate restTemplate;
+    private final AdvisorServiceClient advisorServiceClient;
+
 
     /**
      * Конструктор за инжектиране на необходимите сървиси.
@@ -41,13 +43,13 @@ public class TransactionController {
                                  AccountService accountService,
                                  UserService userService,
                                  BudgetService budgetService,
-                                 RestTemplate restTemplate) {
+                                 AdvisorServiceClient advisorServiceClient) {
         this.transactionService = transactionService;
         this.categoryService = categoryService;
         this.accountService = accountService;
         this.userService = userService;
         this.budgetService = budgetService;
-        this.restTemplate = restTemplate;
+        this.advisorServiceClient = advisorServiceClient;
     }
 
     /**
@@ -170,11 +172,14 @@ public class TransactionController {
                     adviceDTO.setBudgetLimit(monthlyLimit);
 
                     // Извикване на външен микросървис за съвет
-                    String adviceMessage = restTemplate.postForObject(
-                            "http://localhost:8080/api/advice",
-                            adviceDTO,
-                            String.class
-                    );
+//                    String adviceMessage = advisorServiceClient.postForObject(
+//                            "http://localhost:8080/api/advice",
+//                            adviceDTO,
+//                            String.class
+//                    );
+
+                    String adviceMessage = advisorServiceClient.createPersonalizedAdvice(adviceDTO);
+
 
                     // Добавяне на съобщението за визуализация
                     redirectAttrs.addFlashAttribute("adviceMessage", adviceMessage);
