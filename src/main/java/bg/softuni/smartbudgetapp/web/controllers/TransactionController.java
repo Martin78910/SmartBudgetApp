@@ -79,6 +79,7 @@ public class TransactionController {
             throw new RuntimeException("Потребителят не е намерен!");
         }
 
+
         // Зареждане на сметките на потребителя
         List<AccountDTO> userAccounts = accountService.getAllAccountsForUser(user.getId());
         model.addAttribute("accounts", userAccounts);
@@ -107,6 +108,7 @@ public class TransactionController {
 
         return "transactions";
     }
+
     /**
      * Обработва POST заявка за добавяне на нова транзакция.
      *
@@ -133,6 +135,7 @@ public class TransactionController {
 
         Long accountId = transactionDTO.getAccountId();
         var category = transactionDTO.getCategory();
+        boolean budgetExceeded = false;
 
         // Допълнителна валидация за разходни транзакции
         if (!transactionDTO.isIncome()) {
@@ -148,10 +151,16 @@ public class TransactionController {
 
                 // Спиране на транзакцията, ако надвишава бюджета
                 if (newTotalSpent > monthlyLimit) {
+                    budgetExceeded = true;
+
                     // Предоставяне на специфично съобщение за оставащия бюджет
                     bindingResult.rejectValue("amount", "error.amount",
                             "Надвишен бюджет за категория " + category +
                                     ". Налични средства: " + String.format("%.2f", (monthlyLimit - spentSoFar)));
+
+                    // Извикване на микросървиса за съвет при надвишен бюджет
+                    String genericAdvice = advisorServiceClient.getGenericAdvice();
+                    model.addAttribute("genericAdviceMessage", genericAdvice);
 
                     // Възстановяване на модела с текущото състояние
                     model.addAttribute("transactions", transactionService.getTransactionsByAccountId(accountId));
@@ -159,6 +168,7 @@ public class TransactionController {
                     model.addAttribute("accounts", accountService.getAllAccountsForUser(user.getId()));
                     model.addAttribute("selectedAccountId", accountId);
                     model.addAttribute("allCategories", categoryService.getAllCategories());
+                    model.addAttribute("availableCategories", budgetService.getActiveCategoriesForAccount(accountId));
                     return "transactions";
                 }
 
@@ -171,15 +181,12 @@ public class TransactionController {
                     adviceDTO.setCurrentSpending(newTotalSpent);
                     adviceDTO.setBudgetLimit(monthlyLimit);
 
-                    // Извикване на външен микросървис за съвет
-//                    String adviceMessage = advisorServiceClient.postForObject(
-//                            "http://localhost:8080/api/advice",
-//                            adviceDTO,
-//                            String.class
-//                    );
-
+                    // Извикване на външен микросървис за персонализиран съвет
                     String adviceMessage = advisorServiceClient.createPersonalizedAdvice(adviceDTO);
 
+                    // Извикваме общия съвет от микросървиса
+                    String genericAdvice = advisorServiceClient.getGenericAdvice();
+                    redirectAttrs.addFlashAttribute("genericAdviceMessage", genericAdvice);
 
                     // Добавяне на съобщението за визуализация
                     redirectAttrs.addFlashAttribute("adviceMessage", adviceMessage);
@@ -189,6 +196,23 @@ public class TransactionController {
 
         // Връщане към формата, ако има грешки при валидацията
         if (bindingResult.hasErrors()) {
+            // Извикваме общия съвет от микросървиса само когато има валидационни грешки
+            if (!budgetExceeded) { // Избягваме дублиране ако вече е извикан
+                String genericAdvice = advisorServiceClient.getGenericAdvice();
+                model.addAttribute("genericAdviceMessage", genericAdvice);
+            }
+
+            // Допълване на модела с нужните данни
+            model.addAttribute("accounts", accountService.getAllAccountsForUser(user.getId()));
+            model.addAttribute("allCategories", categoryService.getAllCategories());
+            if (accountId != null) {
+                model.addAttribute("transactions", transactionService.getTransactionsByAccountId(accountId));
+                model.addAttribute("availableCategories", budgetService.getActiveCategoriesForAccount(accountId));
+                model.addAttribute("selectedAccountId", accountId);
+            } else {
+                model.addAttribute("transactions", List.of());
+                model.addAttribute("availableCategories", List.of());
+            }
             return "transactions";
         }
 

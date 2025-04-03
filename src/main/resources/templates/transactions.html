@@ -44,6 +44,11 @@
 <div class="container flex-grow-1 mt-4">
     <h1 class="text-center">Трансакции</h1>
 
+    <!-- Съобщение с общ съвет от микросървиса -->
+    <div th:if="${genericAdviceMessage}" class="alert alert-info text-center">
+        <p th:text="${genericAdviceMessage}"></p>
+    </div>
+
     <!-- Съобщение от микросървиса при достигане на 90% от бюджета -->
     <div th:if="${adviceMessage}" class="alert alert-warning text-center">
         <p th:text="${adviceMessage}"></p>
